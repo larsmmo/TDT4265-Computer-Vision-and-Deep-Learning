@@ -4,6 +4,7 @@ from PIL import Image
 import torchvision
 import torch
 import numpy as np
+from torch import nn
 image = Image.open("images/zebra.jpg")
 print("Image shape:", image.size)
 
@@ -45,5 +46,34 @@ def torch_image_to_numpy(image: torch.Tensor):
     image = np.moveaxis(image, 0, 2)
     return image
 
+testIndices = [0, 1, 2, 3, 14]
+indices = [14, 26, 32, 49, 52] 
+firstIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-indices = [14, 26, 32, 49, 52]
+activation = first_conv_layer(image)
+
+plt.figure(figsize=(20, 4))
+
+for i, idx in enumerate(indices):
+    plt.subplot(2, 5, i + 1)
+    image_kernel = torch_image_to_numpy(first_conv_layer.weight[idx, ...])
+    plt.imshow(image_kernel)
+    plt.subplot(2, 5, i + 6)
+    image_activation = torch_image_to_numpy(activation[0, idx, :, :])
+    plt.imshow(image_activation, cmap = "gray")
+
+#plt.show()
+plt.savefig('Visualization.png', format ="png")
+
+#For Task 4c
+new_model = nn.Sequential(*list(model.children())[:-3])
+activation = new_model.forward(image)
+
+plt.figure(figsize=(20, 4))
+for i, idx in enumerate(firstIndices):
+    plt.subplot(2, 5, i + 1)
+    image_activation = torch_image_to_numpy(activation[0, idx, :, :])
+    plt.imshow(image_activation, cmap = "gray")
+
+plt.show()
+plt.savefig('Visualization2.png', format ="png")

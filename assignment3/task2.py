@@ -25,6 +25,9 @@ def compute_loss_and_accuracy(
     """
     average_loss = 0
     accuracy = 0
+    steps = 0
+    images = 0
+    correct = 0
 
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -35,6 +38,15 @@ def compute_loss_and_accuracy(
             output_probs = model(X_batch)
 
             # Compute Loss and Accuracy
+            average_loss += loss_criterion(output_probs, Y_batch).item()
+
+            correct += (output_probs.argmax(axis=1).squeeze() == Y_batch.squeeze()).sum().item()
+
+            steps += 1
+            images += output_probs.argmax(axis=1).shape[0]
+
+    average_loss = average_loss / steps
+    accuracy = correct / images
 
     return average_loss, accuracy
 
@@ -61,17 +73,42 @@ class ExampleModel(nn.Module):
                 kernel_size=5,
                 stride=1,
                 padding=2
-            )
+            ),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.ReLU(), 			# ReLU after max pooling should be faster, right?
+
+            nn.Conv2d(
+                in_channels=num_filters,
+                out_channels=num_filters * 2,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.ReLU(), 
+
+            nn.Conv2d(
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 4,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.ReLU()
         )
-        # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 32*32*32
+        # The output of feature_extractor will be [batch_size, num_filters * 4, 4, 4]
+        self.num_output_features = num_filters * 4 * 4 * 4
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
-            nn.Linear(self.num_output_features, num_classes),
+            nn.Linear(self.num_output_features, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_classes)
+            # Softmax already in crossEntrolpyLoss!
         )
 
     def forward(self, x):
@@ -80,8 +117,13 @@ class ExampleModel(nn.Module):
         Args:
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
+        # Image goes through conv layers, is then reshaped to [batch_size, num_output_features] (flattened),
+        # and then goes through the two last fully-connected layers
+        out = self.feature_extractor(x)
+        out = out.view(-1, self.num_output_features)
+        out = self.classifier(out)
+
         batch_size = x.shape[0]
-        out = x
         expected_shape = (batch_size, self.num_classes)
         assert out.shape == (batch_size, self.num_classes),\
             f"Expected output of forward pass to be: {expected_shape}, but got: {out.shape}"
@@ -114,8 +156,9 @@ class Trainer:
         print(self.model)
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
-                                         self.learning_rate)
+        self.optimizer = torch.optim.Adadelta(self.model.parameters(),
+                                      self.learning_rate,
+                                      )
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders
@@ -159,6 +202,8 @@ class Trainer:
         )
         self.TEST_ACC[self.global_step] = test_acc
         self.TEST_LOSS[self.global_step] = test_loss
+        print(f"Test Loss: {test_loss:.2f},",
+        	  f"Test Accuracy: {test_acc:.3f}",sep="\t")
 
         self.model.train()
 
@@ -176,6 +221,13 @@ class Trainer:
             print("Early stop criteria met")
             return True
         return False
+
+    def calculate_training_loss_acc(self):
+    	train_toss, train_acc = compute_loss_and_accuracy(
+    		self.dataloader_train, self.model, self.loss_criterion
+    	)
+    	print(f"training loss: {train_toss:.2f},",
+        	  f"training accuracy: {train_acc:.3f}",sep="\t")
 
     def train(self):
         """
@@ -203,7 +255,6 @@ class Trainer:
 
                 # Backpropagation
                 loss.backward()
-
                 # Gradient descent step
                 self.optimizer.step()
 
@@ -216,7 +267,9 @@ class Trainer:
                     self.save_model()
                     if self.should_early_stop():
                         print("Early stopping.")
+                        self.calculate_training_loss_acc()
                         return
+        self.calculate_training_loss_acc()
 
     def save_model(self):
         def is_best_model():
@@ -263,7 +316,7 @@ def create_plots(trainer: Trainer, name: str):
 if __name__ == "__main__":
     epochs = 10
     batch_size = 64
-    learning_rate = 5e-2
+    learning_rate = 3e-1
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
     model = ExampleModel(image_channels=3, num_classes=10)
