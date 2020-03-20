@@ -4,30 +4,38 @@ from tools import read_predicted_boxes, read_ground_truth_boxes
 
 
 def calculate_iou(prediction_box, gt_box):
-    """Calculate intersection over union of single predicted and ground truth box.
+	"""Calculate intersection over union of single predicted and ground truth box.
 
-    Args:
-        prediction_box (np.array of floats): location of predicted object as
-            [xmin, ymin, xmax, ymax]
-        gt_box (np.array of floats): location of ground truth object as
-            [xmin, ymin, xmax, ymax]
+	Args:
+	    prediction_box (np.array of floats): location of predicted object as
+	        [xmin, ymin, xmax, ymax]
+	    gt_box (np.array of floats): location of ground truth object as
+	        [xmin, ymin, xmax, ymax]
 
-        returns:
-            float: value of the intersection of union for the two boxes.
-    """
-    # YOUR CODE HERE
+	    returns:
+	        float: value of the intersection of union for the two boxes.
+	"""
+	# YOUR CODE HERE
+	# Compute intersection
+	leftX = max(prediction_box[0], gt_box[0])
+	rightX = min(prediction_box[2], gt_box[2])
+	topY = max(prediction_box[1], gt_box[1])
+	bottomY = min(prediction_box[3], gt_box[3])
 
-    # Compute intersection
+	intersectionArea = max(0, rightX - leftX) * max(0, bottomY - topY)
+	# Compute union
+	prediction_area = (prediction_box[2] - prediction_box[0]) * (prediction_box[3] - prediction_box[1])
+	gt_area = (gt_box[2] - gt_box[0]) * (gt_box[3] - gt_box[1])
 
-    # Compute union
-    iou = 0
-    assert iou >= 0 and iou <= 1
-    return iou
+	iou = intersectionArea / float(prediction_area + gt_area - intersectionArea)
+
+	assert iou >= 0 and iou <= 1
+	return iou
 
 
 def calculate_precision(num_tp, num_fp, num_fn):
     """ Calculates the precision for the given parameters.
-        Returns 1 if num_tp + num_fp = 0
+        Returns 1 if num_tp + num_fp = 0 (or just num_tp = 0, since they can't be negative)
 
     Args:
         num_tp (float): number of true positives
@@ -36,12 +44,13 @@ def calculate_precision(num_tp, num_fp, num_fn):
     Returns:
         float: value of precision
     """
-    raise NotImplementedError
+    return (num_tp/(num_tp + num_fp)) if num_tp else 1
+    
 
 
 def calculate_recall(num_tp, num_fp, num_fn):
     """ Calculates the recall for the given parameters.
-        Returns 0 if num_tp + num_fn = 0
+        Returns 0 if num_tp + num_fn = 0 (or just num_tp = 0, since they can't be negative)
     Args:
         num_tp (float): number of true positives
         num_fp (float): number of false positives
@@ -49,7 +58,7 @@ def calculate_recall(num_tp, num_fp, num_fn):
     Returns:
         float: value of recall
     """
-    raise NotImplementedError
+    return (num_tp/(num_tp + num_fn)) if num_tp else 0
 
 
 def get_all_box_matches(prediction_boxes, gt_boxes, iou_threshold):
@@ -174,12 +183,25 @@ def plot_precision_recall_curve(precisions, recalls):
     Returns:
         None
     """
-    plt.figure(figsize=(20, 20))
+    interpolated = np.zeros(11)
+    j = 0
+    indices = np.arange(0.0, 1.1, 0.1)
+    print(indices)
+    for i in indices:
+    	while int(i*10) > int(recalls[j] * 10):
+    		j = j + 1
+    	interpolated[int(i*10)] = max(precisions[j:])
+
+    plt.figure(figsize=(15, 10))
     plt.plot(recalls, precisions)
+    plt.plot(indices, interpolated, "x")
     plt.xlabel("Recall")
     plt.ylabel("Precision")
-    plt.xlim([0.8, 1.0])
-    plt.ylim([0.8, 1.0])
+    plt.xlim([0.0, 1.05])
+    plt.ylim([0.0, 1.1])
+    plt.xticks(np.arange(0.0, 1.1, 0.1))
+    plt.yticks(np.arange(0.0, 1.1, 0.1))
+    plt.show()
     plt.savefig("precision_recall_curve.png")
 
 
@@ -238,6 +260,9 @@ def mean_average_precision(ground_truth_boxes, predicted_boxes):
 
 
 if __name__ == "__main__":
-    ground_truth_boxes = read_ground_truth_boxes()
-    predicted_boxes = read_predicted_boxes()
-    mean_average_precision(ground_truth_boxes, predicted_boxes)
+    #ground_truth_boxes = read_ground_truth_boxes()
+    #predicted_boxes = read_predicted_boxes()
+    #mean_average_precision(ground_truth_boxes, predicted_boxes)
+	precision = [1.0, 0.80, 0.60, 0.5, 0.20]
+	recall = [0.3, 0.4, 0.5, 0.7, 1.0]
+	plot_precision_recall_curve(precision, recall)
