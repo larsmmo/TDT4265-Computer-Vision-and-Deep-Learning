@@ -123,9 +123,7 @@ class SoftmaxModel:
        			aj_derivative = (2.0/3.0) * (1.7159 - (1 / 1.7159) * self.aj[(i-1)]**2)
        		else:
        			aj_derivative = self.aj[(i-1)] * (1 - self.aj[(i-1)])
-       		print(delta.shape)
        		delta = aj_derivative * np.dot(delta, self.ws[i].T)
-       		print(self.ws[i].T.shape)
        		if i == 1:
        			self.grads[(i-1)] = np.dot(delta.T, X).T / (outputs.shape[0]) #Should have added input X as first element of aj or zj..
        		else:
