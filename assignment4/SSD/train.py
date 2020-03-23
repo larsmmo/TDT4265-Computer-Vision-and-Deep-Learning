@@ -38,7 +38,7 @@ def start_train(cfg):
     return model
 
 
-def main():
+def get_parser():
     parser = argparse.ArgumentParser(description='Single Shot MultiBox Detector Training With PyTorch')
     parser.add_argument(
         "config_file",
@@ -53,8 +53,11 @@ def main():
         default=None,
         nargs=argparse.REMAINDER,
     )
-    args = parser.parse_args()
+    return parser
 
+
+def main():
+    args = get_parser().parse_args()
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()

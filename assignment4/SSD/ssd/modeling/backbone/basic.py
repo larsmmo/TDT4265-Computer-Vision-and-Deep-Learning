@@ -1,4 +1,5 @@
 import torch
+from torch import nn
 
 def reluConvLayers(in_ch, out_ch, num_filters, stride1, stride2, padding1, padding2):
     extractor = nn.Sequential(
@@ -13,12 +14,13 @@ def reluConvLayers(in_ch, out_ch, num_filters, stride1, stride2, padding1, paddi
             nn.ReLU(), 
             nn.Conv2d(
                 in_channels=num_filters,
-                out_channels=output_channels[out_ch],
+                out_channels=out_ch,
                 kernel_size=3,
                 stride=stride2,
                 padding=padding2
             )
         )
+    return extractor
 
 class BasicModel(torch.nn.Module):
     """
@@ -122,29 +124,30 @@ class BasicModel(torch.nn.Module):
                                       padding2=0)
     
     def forward(self, x):
-    """
-    The forward functiom should output features with shape:
-        [shape(-1, output_channels[0], 38, 38),
-        shape(-1, output_channels[1], 19, 19),
-        shape(-1, output_channels[2], 10, 10),
-        shape(-1, output_channels[3], 5, 5),
-        shape(-1, output_channels[3], 3, 3),
-        shape(-1, output_channels[4], 1, 1)]
-    We have added assertion tests to check this, iteration through out_features,
-    where out_features[0] should have the shape:
-        shape(-1, output_channels[0], 38, 38),
-    """
-    out_features = []
-    out_features.append(self.output0(x))
-    out_features.append(self.output1(out_features[0])) 
-    out_features.append(self.output2(out_features[1])) 
-    out_features.append(self.output3(out_features[2])) 
-    out_features.append(self.output4(out_features[3])) 
-    out_features.append(self.output5(out_features[4])) 
+        """
+        The forward functiom should output features with shape:
+            [shape(-1, output_channels[0], 38, 38),
+            shape(-1, output_channels[1], 19, 19),
+            shape(-1, output_channels[2], 10, 10),
+            shape(-1, output_channels[3], 5, 5),
+            shape(-1, output_channels[3], 3, 3),
+            shape(-1, output_channels[4], 1, 1)]
+        We have added assertion tests to check this, iteration through out_features,
+        where out_features[0] should have the shape:
+            shape(-1, output_channels[0], 38, 38),
+        """
+        out_features = []
+        out_features.append(self.output0(x))
+        out_features.append(self.output1(out_features[0])) 
+        out_features.append(self.output2(out_features[1])) 
+        out_features.append(self.output3(out_features[2])) 
+        out_features.append(self.output4(out_features[3])) 
+        out_features.append(self.output5(out_features[4])) 
 
-    for idx, feature in enumerate(out_features):
-        expected_shape = (output_channels[idx], self.output_feature_size[idx], self.output_feature_size[idx])
-        assert feature.shape[1:] == expected_shape, \
-            f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
-    return tuple(out_features)
+        for idx, feature in enumerate(out_features):
+            expected_shape = (self.output_channels[idx], self.output_feature_size[idx], self.output_feature_size[idx])
+            assert feature.shape[1:] == expected_shape, \
+                f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
+        print("Basic backbone passed assertions")
+        return tuple(out_features)
 

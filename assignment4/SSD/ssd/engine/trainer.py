@@ -59,20 +59,16 @@ def do_train(cfg, model,
         if iteration % cfg.LOG_STEP == 0:
             eta_seconds = meters.time.global_avg * (max_iter - iteration)
             eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
-            logger.info(
-                meters.delimiter.join([
-                    "iter: {iter:06d}",
-                    "lr: {lr:.5f}",
-                    '{meters}',
-                    "eta: {eta}",
-                    'mem: {mem}M',
-                ]).format(
-                    iter=iteration,
-                    lr=optimizer.param_groups[0]['lr'],
-                    meters=str(meters),
-                    eta=eta_string,
-                    mem=round(torch.cuda.max_memory_allocated() / 1024.0 / 1024.0))
-            )
+            lr = optimizer.param_groups[0]['lr']
+            to_log = [
+                f"iter: {iteration:06d}",
+                f"lr: {lr:.5f}",
+                f"eta: {eta_string}",
+            ]
+            if torch.cuda.is_available():
+                mem = round(torch.cuda.max_memory_allocated() / 1024.0 / 1024.0)
+                to_log.append(f'mem: {mem}M')
+            logger.info(meters.delimiter.join(to_log))
             global_step = iteration
             summary_writer.add_scalar(
                 'losses/total_loss', loss, global_step=global_step)

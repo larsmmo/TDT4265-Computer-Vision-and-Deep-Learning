@@ -59,7 +59,28 @@ class DatasetCatalog:
         'mnist_detection_val': {
             'data_dir': 'mnist_detection/test',
             'split': 'val'
+        },
+        'waymo_train': {
+            'data_dir': 'waymo',
+            'split': "train"
+        },
+        'waymo_val': {
+            'data_dir': 'waymo',
+            'split': 'val'
+        },
+        'tdt4265_train': {
+            'data_dir': 'tdt4265/train',
+            'split': 'train'
+        },
+        'tdt4265_val': {
+            'data_dir': 'tdt4265/train',
+            'split': 'val'
+        },
+        'tdt4265_test': {
+            'data_dir': 'tdt4265/test',
+            'split': 'test'
         }
+
     }
 
     @staticmethod
@@ -87,5 +108,18 @@ class DatasetCatalog:
                 is_train= attrs["split"] == "train"
             )
             return dict(factory="MNISTDetection", args=args)
-
+        elif "waymo" in name:
+            attrs = DatasetCatalog.DATASETS[name]
+            args = dict(
+                data_dir=os.path.join(root, attrs["data_dir"]),
+                split=attrs["split"]
+            )
+            return dict(factory="WaymoDataset", args=args)
+        elif "tdt4265" in name:
+            attrs = DatasetCatalog.DATASETS[name]
+            args = dict(
+                data_dir=os.path.join(root, attrs["data_dir"]),
+                split=attrs["split"]
+            )
+            return dict(factory="TDT4265Dataset", args=args)
         raise RuntimeError("Dataset not available: {}".format(name))
