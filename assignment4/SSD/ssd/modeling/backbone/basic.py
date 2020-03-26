@@ -3,6 +3,7 @@ from torch import nn
 
 def reluConvLayers(in_ch, out_ch, num_filters, stride1, stride2, padding1, padding2):
     extractor = nn.Sequential(
+            nn.BatchNorm2d(num_features=in_ch),
             nn.ReLU(), 
             nn.Conv2d(
                 in_channels=in_ch,
@@ -11,14 +12,24 @@ def reluConvLayers(in_ch, out_ch, num_filters, stride1, stride2, padding1, paddi
                 stride=stride1,
                 padding=padding1
             ),
+            nn.BatchNorm2d(num_features=num_filters), 
             nn.ReLU(), 
             nn.Conv2d(
                 in_channels=num_filters,
+                out_channels=num_filters * 2,
+                kernel_size=3,
+                stride=stride1,
+                padding=padding1
+            ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.ReLU(), 
+            nn.Conv2d(
+                in_channels=num_filters * 2,
                 out_channels=out_ch,
                 kernel_size=3,
                 stride=stride2,
                 padding=padding2
-            )
+            ),
         )
     return extractor
 
@@ -44,7 +55,7 @@ class BasicModel(torch.nn.Module):
 
         num_filters = 32
 
-        self.output0 = nn.Sequential(
+        self.extraOutput = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
                 out_channels=num_filters,
@@ -52,8 +63,8 @@ class BasicModel(torch.nn.Module):
                 stride=1,
                 padding=1
             ),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.ReLU(),          # ReLU after max pooling should be faster, right?
+            nn.BatchNorm2d(num_features=num_filters),
+            nn.ReLU(),        
 
             nn.Conv2d(
                 in_channels=num_filters,
@@ -62,7 +73,31 @@ class BasicModel(torch.nn.Module):
                 stride=1,
                 padding=1
             ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
             nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.ReLU(),               
+
+            nn.Conv2d(
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 2,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 2,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
+        )
+
+        self.output0 = nn.Sequential(
+            nn.BatchNorm2d(num_features=num_filters * 2),
             nn.ReLU(), 
 
             nn.Conv2d(
@@ -72,42 +107,45 @@ class BasicModel(torch.nn.Module):
                 stride=1,
                 padding=1
             ),
+            nn.BatchNorm2d(num_features=num_filters*2),
             nn.ReLU(), 
 
             nn.Conv2d(
                 in_channels=num_filters * 2,
-                out_channels=output_channels[0],
+                out_channels=num_filters * 4,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
+            nn.BatchNorm2d(num_features=num_filters*4),
+            nn.ReLU(), 
+
+            nn.Conv2d(
+                in_channels=num_filters * 4,
+                out_channels=output_channels[1],
                 kernel_size=3,
                 stride=2,
                 padding=1
-            )
+            ),
         )
 
-        self.output1 = reluConvLayers(in_ch=output_channels[0],
-                                      out_ch=output_channels[1],
+        self.output1 = reluConvLayers(in_ch=output_channels[1],
+                                      out_ch=output_channels[2],
                                       num_filters=128,
                                       stride1=1, 
                                       stride2=2, 
                                       padding1=1, 
                                       padding2=1)
 
-        self.output2 = reluConvLayers(in_ch=output_channels[1],
-                                      out_ch=output_channels[2],
+        self.output2 = reluConvLayers(in_ch=output_channels[2],
+                                      out_ch=output_channels[3],
                                       num_filters=256,
                                       stride1=1, 
                                       stride2=2, 
                                       padding1=1, 
                                       padding2=1)
 
-        self.output3 = reluConvLayers(in_ch=output_channels[2],
-                                      out_ch=output_channels[3],
-                                      num_filters=128,
-                                      stride1=1, 
-                                      stride2=2, 
-                                      padding1=1, 
-                                      padding2=1)
-
-        self.output4 = reluConvLayers(in_ch=output_channels[3],
+        self.output3 = reluConvLayers(in_ch=output_channels[3],
                                       out_ch=output_channels[4],
                                       num_filters=128,
                                       stride1=1, 
@@ -115,8 +153,16 @@ class BasicModel(torch.nn.Module):
                                       padding1=1, 
                                       padding2=1)
 
-        self.output5 = reluConvLayers(in_ch=output_channels[4],
+        self.output4 = reluConvLayers(in_ch=output_channels[4],
                                       out_ch=output_channels[5],
+                                      num_filters=128,
+                                      stride1=1, 
+                                      stride2=2, 
+                                      padding1=1, 
+                                      padding2=1)
+
+        self.output5 = reluConvLayers(in_ch=output_channels[5],
+                                      out_ch=output_channels[6],
                                       num_filters=128,
                                       stride1=1, 
                                       stride2=1, 
@@ -137,17 +183,20 @@ class BasicModel(torch.nn.Module):
             shape(-1, output_channels[0], 38, 38),
         """
         out_features = []
-        out_features.append(self.output0(x))
-        out_features.append(self.output1(out_features[0])) 
-        out_features.append(self.output2(out_features[1])) 
-        out_features.append(self.output3(out_features[2])) 
-        out_features.append(self.output4(out_features[3])) 
-        out_features.append(self.output5(out_features[4])) 
+        out_features.append(self.extraOutput(x))
+        out_features.append(self.output0(out_features[0]))
+        out_features.append(self.output1(out_features[1])) 
+        out_features.append(self.output2(out_features[2])) 
+        out_features.append(self.output3(out_features[3])) 
+        out_features.append(self.output4(out_features[4])) 
+        out_features.append(self.output5(out_features[5]))
 
+        """
         for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx], self.output_feature_size[idx])
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
-        print("Basic backbone passed assertions")
+        """
+
         return tuple(out_features)
 

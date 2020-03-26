@@ -4,7 +4,8 @@ from .lr_scheduler import WarmupMultiStepLR
 
 def make_optimizer(cfg, model, lr=None):
     lr = cfg.SOLVER.BASE_LR if lr is None else lr
-    return torch.optim.SGD(model.parameters(), lr=lr, momentum=cfg.SOLVER.MOMENTUM, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
+    return torch.optim.Adagrad(model.parameters(), lr=lr, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
+    #return torch.optim.SGD(model.parameters(), lr=lr, momentum=cfg.SOLVER.MOMENTUM, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
 
 
 def make_lr_scheduler(cfg, optimizer, milestones=None):

@@ -57,16 +57,12 @@ def run_demo(cfg, ckpt, score_threshold, images_dir: pathlib.Path, output_dir: p
         boxes = boxes[indices]
         labels = labels[indices]
         scores = scores[indices]
-        meters = "|".join([
-                'objects {:02d}'.format(len(boxes)),
-                'load {:03d}ms'.format(round(load_time * 1000)),
-                'inference {:03d}ms'.format(round(inference_time * 1000)),
-                'FPS {}'.format(round(1.0 / inference_time))
-            ])
-        image_name = image_path.name
-
-        drawn_image = draw_boxes(image, boxes, labels, scores, class_names).astype(np.uint8)
+        drawn_image = draw_boxes(
+            image, boxes, labels, scores, class_names).astype(np.uint8)
         drawn_images.append(drawn_image)
+        im = Image.fromarray(drawn_image)
+        output_path = output_dir.joinpath(f"{image_name}.png")
+        im.save(output_path)
     return drawn_images
 
 
