@@ -1,0 +1,18 @@
+MODEL:
+    NUM_CLASSES: 21
+INPUT:
+    IMAGE_SIZE: 300
+DATASETS:
+    TRAIN: ("voc_2007_trainval", "voc_2012_trainval")
+    TEST: ("voc_2007_test", )
+SOLVER:
+    MAX_ITER: 100000
+    LR_STEPS: [80000, 100000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 5e-4
+  
+OUTPUT_DIR: 'outputs/vgg_VOC'
+EVAL_STEP: 2500
+MODEL_SAVE_STEP: 2500
+DATASET_DIR: "/work/datasets/"

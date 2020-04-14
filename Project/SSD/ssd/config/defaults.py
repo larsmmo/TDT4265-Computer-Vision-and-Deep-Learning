@@ -6,7 +6,7 @@ cfg.MODEL = CN()
 cfg.MODEL.META_ARCHITECTURE = 'SSDDetector'
 # match default boxes to any ground truth with jaccard overlap higher than a threshold (0.5)
 cfg.MODEL.THRESHOLD = 0.5
-cfg.MODEL.NUM_CLASSES = 21
+cfg.MODEL.NUM_CLASSES = 5
 # Hard negative mining
 cfg.MODEL.NEG_POS_RATIO = 3
 cfg.MODEL.CENTER_VARIANCE = 0.1
@@ -16,7 +16,7 @@ cfg.MODEL.SIZE_VARIANCE = 0.2
 # Backbone
 # ---------------------------------------------------------------------------- #
 cfg.MODEL.BACKBONE = CN()
-cfg.MODEL.BACKBONE.NAME = 'vgg'
+cfg.MODEL.BACKBONE.NAME = 'resnext101'
 cfg.MODEL.BACKBONE.OUT_CHANNELS = (512, 1024, 512, 256, 256, 256)
 cfg.MODEL.BACKBONE.PRETRAINED = True
 cfg.MODEL.BACKBONE.INPUT_CHANNELS = 3
@@ -25,14 +25,14 @@ cfg.MODEL.BACKBONE.INPUT_CHANNELS = 3
 # PRIORS
 # -----------------------------------------------------------------------------
 cfg.MODEL.PRIORS = CN()
-cfg.MODEL.PRIORS.FEATURE_MAPS = [75, 38, 19, 10, 5, 3, 1]
-cfg.MODEL.PRIORS.STRIDES = [4, 8, 16, 32, 64, 100, 300]
-cfg.MODEL.PRIORS.MIN_SIZES = [15, 30, 60, 111, 162, 213, 264]
-cfg.MODEL.PRIORS.MAX_SIZES = [30, 60, 111, 162, 213, 264, 315]
-cfg.MODEL.PRIORS.ASPECT_RATIOS = [[2], [2], [2, 3], [2, 3], [2, 3], [2], [2]]
+cfg.MODEL.PRIORS.FEATURE_MAPS = [(47, 33), (24, 17), (12, 9), (7,5) , (3,3), 1]
+cfg.MODEL.PRIORS.STRIDES = [8, 16, 32, 50, 75, 300]
+cfg.MODEL.PRIORS.MIN_SIZES = [30, 60, 111, 162, 213, 264]
+cfg.MODEL.PRIORS.MAX_SIZES = [60, 111, 162, 213, 264, 315]
+cfg.MODEL.PRIORS.ASPECT_RATIOS = [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
 # When has 1 aspect ratio, every location has 4 boxes, 2 ratio 6 boxes.
 # #boxes = 2 + #ratio * 2
-cfg.MODEL.PRIORS.BOXES_PER_LOCATION = [2, 4, 6, 6, 6, 4, 4]  # number of boxes per feature map location
+cfg.MODEL.PRIORS.BOXES_PER_LOCATION = [4, 6, 6, 6, 4, 4]  # number of boxes per feature map location
 cfg.MODEL.PRIORS.CLIP = True
 
 # -----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ cfg.MODEL.BOX_HEAD.PREDICTOR = 'SSDBoxPredictor'
 # -----------------------------------------------------------------------------
 cfg.INPUT = CN()
 # Image size
-cfg.INPUT.IMAGE_SIZE = 300
+cfg.INPUT.IMAGE_SIZE = (360, 270)
 # Values to be used for image normalization, RGB layout
 cfg.INPUT.PIXEL_MEAN = [123, 117, 104]
 
@@ -73,7 +73,7 @@ cfg.DATA_LOADER.PIN_MEMORY = True
 # ---------------------------------------------------------------------------- #
 cfg.SOLVER = CN()
 # train configs
-cfg.SOLVER.MAX_ITER = 10000
+cfg.SOLVER.MAX_ITER = 120000
 cfg.SOLVER.LR_STEPS = [80000, 100000]
 cfg.SOLVER.GAMMA = 0.1
 cfg.SOLVER.BATCH_SIZE = 32

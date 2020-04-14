@@ -1,0 +1,20 @@
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 1024, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (37,260)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 100000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 1e-4
+OUTPUT_DIR: 'outputs/resnext109Adam'
+DATASET_DIR: "datasets"

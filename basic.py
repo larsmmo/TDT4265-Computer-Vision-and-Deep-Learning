@@ -56,7 +56,6 @@ class BasicModel(torch.nn.Module):
         num_filters = 32
 
         self.extraOutput = nn.Sequential(
-            nn.MaxPool2d(kernel_size=2, stride=2),       
             nn.Conv2d(
                 in_channels=image_channels,
                 out_channels=num_filters,
@@ -65,7 +64,7 @@ class BasicModel(torch.nn.Module):
                 padding=1
             ),
             nn.BatchNorm2d(num_features=num_filters),
-            nn.ReLU(),               
+            nn.ReLU(),        
 
             nn.Conv2d(
                 in_channels=num_filters,
@@ -74,7 +73,27 @@ class BasicModel(torch.nn.Module):
                 stride=1,
                 padding=1
             ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
             nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.ReLU(),               
+
+            nn.Conv2d(
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 2,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 2,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
         )
 
         self.output0 = nn.Sequential(
