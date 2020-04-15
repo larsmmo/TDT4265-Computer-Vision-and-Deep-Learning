@@ -25,10 +25,10 @@ cfg.MODEL.BACKBONE.INPUT_CHANNELS = 3
 # PRIORS
 # -----------------------------------------------------------------------------
 cfg.MODEL.PRIORS = CN()
-cfg.MODEL.PRIORS.FEATURE_MAPS = [(47, 33), (24, 17), (12, 9), (7,5) , (3,3), 1]
-cfg.MODEL.PRIORS.STRIDES = [8, 16, 32, 50, 75, 300]
+cfg.MODEL.PRIORS.FEATURE_MAPS = [(47, 33), (24, 17), (12, 9), (6,5) , (3,3), (1,1)]
+cfg.MODEL.PRIORS.STRIDES = [8, 15, 30, 60, 120, 360]
 cfg.MODEL.PRIORS.MIN_SIZES = [30, 60, 111, 162, 213, 264]
-cfg.MODEL.PRIORS.MAX_SIZES = [60, 111, 162, 213, 264, 315]
+cfg.MODEL.PRIORS.MAX_SIZES = [64, 128, 192, 256, 310, 374]
 cfg.MODEL.PRIORS.ASPECT_RATIOS = [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
 # When has 1 aspect ratio, every location has 4 boxes, 2 ratio 6 boxes.
 # #boxes = 2 + #ratio * 2

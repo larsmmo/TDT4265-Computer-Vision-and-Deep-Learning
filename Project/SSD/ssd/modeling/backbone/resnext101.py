@@ -3,73 +3,52 @@ from torch import nn
 from torchvision import models
 from torchsummary import summary
 
-def extraLayer(in_ch, out_ch, num_filters, stride1, stride2, padding1, padding2, kern_size):
-    extractor = nn.Sequential(
-            nn.Conv2d(
-                in_channels=in_ch,
-                out_channels=num_filters * 2,
-                kernel_size=1,
-                stride=1,
-                padding=0,
-                bias=False
-            ),
-            nn.BatchNorm2d(num_features=num_filters * 2), 
-            nn.ReLU(inplace = True), 
-            nn.Conv2d(
-                in_channels=num_filters*2,
-                out_channels=num_filters,
-                kernel_size=3,
-                stride=stride1,
-                padding=padding1,
-                bias=False,
-                groups=32
-            ),
-            nn.BatchNorm2d(num_features=num_filters),
-            nn.ReLU(inplace = True),
-            nn.Conv2d(
-                in_channels=num_filters,
-                out_channels=num_filters,
-                kernel_size=kern_size,
-                stride=stride2,
-                padding=padding2,
-                bias=False,
-                groups=32
-            ),
-            nn.BatchNorm2d(num_features=num_filters),
-            nn.ReLU(inplace = True),
-            nn.Conv2d(
-                in_channels=num_filters,
-                out_channels=num_filters,
-                kernel_size=1,
-                stride=1,
-                padding=0,
-                bias=False
-            ),
-            nn.BatchNorm2d(num_features=out_ch),
-            nn.ReLU(inplace = True), 
-            nn.Conv2d(
-                in_channels=num_filters,
-                out_channels=num_filters,
-                kernel_size=3,
-                stride=stride1,
-                padding=padding1,
-                bias=False,
-                groups=32
-            ),
-            nn.BatchNorm2d(num_features=num_filters),
-            nn.ReLU(inplace = True),
-            nn.Conv2d(
-                in_channels=num_filters,
-                out_channels=out_ch,
-                kernel_size=1,
-                stride=1,
-                padding=0,
-                bias=False
-            ),
-            nn.BatchNorm2d(num_features=out_ch),
-            nn.ReLU(inplace = True), 
-        )
-    return extractor
+class ConvBnRelu(torch.nn.Module):
+    
+    def __init__(self, in_ch, out_ch, kernel_size, padding, stride):
+        super(ConvBnRelu, self).__init__()
+        self.conv = nn.Conv2d(in_channels=in_ch,
+                              out_channels=out_ch,
+                              kernel_size=kernel_size, 
+                              padding=padding, 
+                              stride=stride, 
+                              bias=False)
+        self.bn = nn.BatchNorm2d(num_features=out_ch)
+        self.relu = nn.ReLU(inplace=True)
+        
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        x = self.relu(x)
+        return x
+
+
+class AddedLayers(torch.nn.Module):
+    def __init__(self, in_ch):
+        super(AddedLayers, self).__init__()
+
+        self.convLayer1_1 = ConvBnRelu(in_ch, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer1_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=1) 
+        self.convLayer2_1 = ConvBnRelu(512, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer2_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=2)
+        self.convLayer3_1 = ConvBnRelu(512, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer3_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=2)
+
+        self.avgpool = nn.AdaptiveAvgPool2d(output_size=(1,1))
+
+    def forward(self,x):
+        out1_1 = self.convLayer1_1(x)
+        out1_2 = self.convLayer1_2(out1_1)
+        out2_1 = self.convLayer2_1(out1_2)
+        out2_2 = self.convLayer2_2(out2_1)
+        out3_1 = self.convLayer2_1(out2_2)
+        out3_2 = self.convLayer2_2(out3_1)
+
+        out_avg = self.avgpool(out3_2)
+
+        return out2_2, out3_2, out_avg
+
+
 
 class ResNextModel(torch.nn.Module):
     """
@@ -92,27 +71,11 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
-        self.model = models.resnext101_32x8d(pretrained = True)
+        self.model = models.resnet50(pretrained = True)
 
         summary(self.model, (3, 370, 260))
 
-        self.addedLayer1 = extraLayer(in_ch=output_channels[2],
-                                      out_ch=output_channels[3],
-                                      num_filters=1024,
-                                      stride1=1, 
-                                      stride2=2, 
-                                      padding1=1, 
-                                      padding2=0,
-                                      kern_size= 2)
-        
-        self.addedLayer2 = extraLayer(in_ch=output_channels[3],
-                                      out_ch=output_channels[4],
-                                      num_filters=512,
-                                      stride1=1, 
-                                      stride2=2, 
-                                      padding1=1, 
-                                      padding2=1,
-                                      kern_size=3)
+        self.extraLayers = AddedLayers(output_channels[2])
 
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
             param.requires_grad = False
@@ -141,26 +104,23 @@ class ResNextModel(torch.nn.Module):
         x = self.model.maxpool(x)
         x = self.model.layer1(x)
 
-        x = self.model.layer2(x)
-        out_features.append(x)
+        out0 = self.model.layer2(x)
+        out_features.append(out0)
 
-        x = self.model.layer3(x)
-        out_features.append(x)
+        out1 = self.model.layer3(out0)
+        out_features.append(out1)
 
-        x = self.model.layer4(x)
-        out_features.append(x)
+        out2 = self.model.layer4(out1)
+        out_features.append(out2)
 
-        x = self.addedLayer1(x)
-        out_features.append(x)
+        out3, out4, out5 = self.extraLayers(out2)
 
-        x = self.addedLayer2(x)
-        out_features.append(x)
-
-        x = self.model.avgpool(x)
-        out_features.append(x)
+        out_features.append(out3)
+        out_features.append(out4)
+        out_features.append(out5)
 
         """
-        for idx, feature in enumerate(self.out_features):
+        for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx], self.output_feature_size[idx])
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
