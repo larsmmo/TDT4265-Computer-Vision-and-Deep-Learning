@@ -25,8 +25,8 @@ cfg.MODEL.BACKBONE.INPUT_CHANNELS = 3
 # PRIORS
 # -----------------------------------------------------------------------------
 cfg.MODEL.PRIORS = CN()
-cfg.MODEL.PRIORS.FEATURE_MAPS = [[38,38], [19,19], [10,10], [5,5], [3,3], [1,1]]
-cfg.MODEL.PRIORS.STRIDES = [[8,8], [16,16], [32,32], [64,64], [100,100], [300,300]]
+cfg.MODEL.PRIORS.FEATURE_MAPS = [(38,38), (19,19), (10,10), (5,5), (3,3), (1,1)]
+cfg.MODEL.PRIORS.STRIDES = [(8,8), (16,16), (32,32), (64,64), (100,100), (300,300)]
 cfg.MODEL.PRIORS.MIN_SIZES = [30, 60, 111, 162, 213, 264]
 cfg.MODEL.PRIORS.MAX_SIZES = [60, 111, 162, 213, 264, 315]
 """
