@@ -71,17 +71,18 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
-        self.model = models.resnet18(pretrained = True)
+        self.model = models.resnet34(pretrained = True)
 
         #summary(self.model, (3, 370, 260))
 
         self.extraLayers = AddedLayers(output_channels[2])
-
+        """
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
             param.requires_grad = False
 
         for param in self.model.layer4.parameters():    # Unfreeze some of the last convolutional
             param.requires_grad = True                  # layers
+        """
 
 
     def forward(self, x):

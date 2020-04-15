@@ -14,7 +14,7 @@ class WaymoDataset(torch.utils.data.Dataset):
         "person",
         "sign",
         "cyclist")
-    validation_percentage = 0.15
+    validation_percentage = 0.20
 
     def __init__(self, data_dir: str, split: str, transform=None, target_transform=None):
         data_dir = pathlib.Path(data_dir)
