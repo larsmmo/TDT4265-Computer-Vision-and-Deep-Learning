@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torchvision import models
-from torchsummary import summary
+#from torchsummary import summary
 
 class ConvBnRelu(torch.nn.Module):
     
@@ -71,7 +71,7 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
-        self.model = models.resnet34(pretrained = True)
+        self.model = models.resnet101(pretrained = True)
 
         #summary(self.model, (3, 370, 260))
 
