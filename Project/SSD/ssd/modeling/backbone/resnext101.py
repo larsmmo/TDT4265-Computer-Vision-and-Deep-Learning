@@ -73,7 +73,7 @@ class ResNextModel(torch.nn.Module):
 
         self.model = models.resnet18(pretrained = True)
 
-        summary(self.model, (3, 370, 260))
+        #summary(self.model, (3, 370, 260))
 
         self.extraLayers = AddedLayers(output_channels[2])
 
