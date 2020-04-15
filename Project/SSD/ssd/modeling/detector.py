@@ -35,7 +35,7 @@ def build_backbone(cfg):
     backbone_name = cfg.MODEL.BACKBONE.NAME
     print(backbone_name)
     if backbone_name == "resnext101":
-        model = ResNextModel(cfg, models.resnet101(pretrained = True))
+        model = ResNextModel(cfg)
         return model
     if backbone_name == "basic":
         model = BasicModel(cfg)

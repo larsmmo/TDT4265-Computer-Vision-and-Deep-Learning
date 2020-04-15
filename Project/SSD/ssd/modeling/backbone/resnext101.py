@@ -62,7 +62,7 @@ class ResNextModel(torch.nn.Module):
      shape(-1, output_channels[4], 1, 1)]
      where "output_channels" is the same as cfg.BACKBONE.OUT_CHANNELS
     """
-    def __init__(self, cfg, pretrained_model):
+    def __init__(self, cfg):
         super().__init__()
 
         image_size = cfg.INPUT.IMAGE_SIZE
