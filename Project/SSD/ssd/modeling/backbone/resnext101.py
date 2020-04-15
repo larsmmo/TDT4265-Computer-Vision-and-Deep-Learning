@@ -71,7 +71,7 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
-        self.model = models.resnet50(pretrained = True)
+        self.model = models.resnet18(pretrained = True)
 
         summary(self.model, (3, 370, 260))
 
