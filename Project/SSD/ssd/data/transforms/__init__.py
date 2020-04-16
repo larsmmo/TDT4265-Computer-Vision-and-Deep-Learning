@@ -1,18 +1,20 @@
 from ssd.modeling.box_head.prior_box import PriorBox
 from .target_transform import SSDTargetTransform
 from .transforms import *
+import torchvision.transforms as transforms
 
 
 def build_transforms(cfg, is_train=True):
     if is_train:
         transform = [
             ConvertFromInts(),
-            Expand(cfg.INPUT.PIXEL_MEAN),
+            #Expand(cfg.INPUT.PIXEL_MEAN),
             RandomSampleCrop(),
             RandomMirror(),
             ToPercentCoords(),
             Resize(cfg.INPUT.IMAGE_SIZE),
-            SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+            #SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+            Normalize(cfg.INPUT.PIXEL_MEAN, cfg.INPUT.PIXEL_STD)
             ToTensor(),
         ]
     else:

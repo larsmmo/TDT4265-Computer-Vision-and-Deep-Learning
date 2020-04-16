@@ -12,9 +12,9 @@ DATASETS:
     TEST: ("waymo_val", )
 SOLVER:
     MAX_ITER: 120000
-    LR_STEPS: [60000, 100000]
+    LR_STEPS: [30000, 80000]
     GAMMA: 0.1
     BATCH_SIZE: 16
-    LR: 1e-4
-OUTPUT_DIR: 'outputs/resnet101_360x270_mirrExpCrop'
+    LR: 1e-2
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop01LR'
 DATASET_DIR: "datasets"

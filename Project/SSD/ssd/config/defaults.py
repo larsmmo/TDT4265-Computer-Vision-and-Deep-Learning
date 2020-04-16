@@ -58,6 +58,7 @@ cfg.INPUT = CN()
 cfg.INPUT.IMAGE_SIZE = (360, 270)
 # Values to be used for image normalization, RGB layout
 cfg.INPUT.PIXEL_MEAN = [123, 117, 104]
+cfg.INPUT_PIXEL_STD = [0.229*255, 0.224*255, 0.225*255]
 
 # -----------------------------------------------------------------------------
 # Dataset
