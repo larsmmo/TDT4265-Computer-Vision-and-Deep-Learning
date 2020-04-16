@@ -20,7 +20,8 @@ def build_transforms(cfg, is_train=True):
     else:
         transform = [
             Resize(cfg.INPUT.IMAGE_SIZE),
-            SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+            #SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+            Normalize(cfg.INPUT.PIXEL_MEAN, [0.229*255, 0.224*255, 0.225*255]),
             ToTensor()
         ]
     transform = Compose(transform)
