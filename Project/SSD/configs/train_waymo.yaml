@@ -15,6 +15,6 @@ SOLVER:
     LR_STEPS: [30000, 80000]
     GAMMA: 0.1
     BATCH_SIZE: 16
-    LR: 1e-2
-OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop01LR'
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
 DATASET_DIR: "datasets"
