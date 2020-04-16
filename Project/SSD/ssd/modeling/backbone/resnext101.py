@@ -6,10 +6,10 @@ from torchvision import models
 ##############################################
 # From torchvision implementation of resnet: https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 
-def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
+def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1, padding=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=False, dilation=dilation)
+                     padding=padding, groups=groups, bias=False, dilation=dilation)
 
 
 def conv1x1(in_planes, out_planes, stride=1):
@@ -20,7 +20,7 @@ class BasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None):
+                 base_width=64, dilation=1, padding = 1, norm_layer=None):
         super(BasicBlock, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -66,7 +66,7 @@ class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None):
+                 base_width=64, dilation=1, padding = 1, norm_layer=None):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -74,7 +74,7 @@ class Bottleneck(nn.Module):
         # Both self.conv2 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv1x1(inplanes, width)
         self.bn1 = norm_layer(width)
-        self.conv2 = conv3x3(width, width, stride, groups, dilation)
+        self.conv2 = conv3x3(width, width, stride, groups, dilation, padding)
         self.bn2 = norm_layer(width)
         self.conv3 = conv1x1(width, planes * self.expansion)
         self.bn3 = norm_layer(planes * self.expansion)
@@ -140,7 +140,7 @@ class ResNextModel(torch.nn.Module):
         self.extraLayers = nn.Sequential(
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, dilation = 0)
+            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding = 0)
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
@@ -164,7 +164,7 @@ class ResNextModel(torch.nn.Module):
         """
 
     ## The following function is from the pytroch resnet implementation (modified):
-    def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, dilation = 1):
+    def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, dilation = 1, padding = 1):
         norm_layer = nn.BatchNorm2d
         downsample = None
         previous_dilation = self.dilation
@@ -179,7 +179,7 @@ class ResNextModel(torch.nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, dilation, norm_layer))
+                            self.base_width, padding, norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
