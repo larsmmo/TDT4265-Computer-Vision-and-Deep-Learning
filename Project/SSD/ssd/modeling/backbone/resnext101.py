@@ -140,11 +140,11 @@ class ResNextModel(torch.nn.Module):
         self.extraLayers = nn.Sequential(
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding=0)
+            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding=1)
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
-        print(self.extraLayers[0])
+        print(self.extraLayers[2])
 
         # Initialize weights in extra layers with kaiming initialization
         for layer in self.extraLayers:
