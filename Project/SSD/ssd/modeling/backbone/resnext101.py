@@ -136,10 +136,12 @@ class ResNextModel(torch.nn.Module):
 
         #summary(self.model, (3, 370, 260))
         # Adding extra layers for smaller feature maps: Residual blocks with downsampling
-        self.extraLayers = []
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[3], 1, stride = 2))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[4], 1, stride = 2))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[5], 1, stride = 2))
+        
+        self.extraLayers = nn.Sequential(
+            self._make_extra_layer(Bottleneck, output_channels[3], 1, stride = 2),
+            self._make_extra_layer(Bottleneck, output_channels[4], 1, stride = 2),
+            self._make_extra_layer(Bottleneck, output_channels[5], 1, stride = 2)
+        )
 
         #self.extraLayers = AddedLayers(output_channels[2])
 
