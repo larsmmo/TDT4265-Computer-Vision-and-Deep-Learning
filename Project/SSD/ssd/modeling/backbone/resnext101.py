@@ -228,7 +228,7 @@ class ResNextModel(torch.nn.Module):
 
         
         for idx, feature in enumerate(out_features):
-            expected_shape = (self.output_channels[idx], self.output_feature_size[idx][0], self.output_feature_size[idx][1])
+            expected_shape = (self.output_channels[idx], self.output_feature_size[idx][1], self.output_feature_size[idx][0])
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         
