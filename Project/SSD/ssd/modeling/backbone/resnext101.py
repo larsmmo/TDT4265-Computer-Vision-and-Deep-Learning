@@ -129,7 +129,7 @@ class ResNextModel(torch.nn.Module):
 
         self.model = models.resnet50(pretrained = True)
 
-        self.inplanes = 64
+        self.inplanes = output_channels[2]
         self.groups = 1
         self.base_width = 64
         self.dilation = 1
@@ -137,9 +137,9 @@ class ResNextModel(torch.nn.Module):
         #summary(self.model, (3, 370, 260))
         # Adding extra layers for smaller feature maps: Residual blocks with downsampling
         self.extraLayers = []
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[2], 1))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[3], 1))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[4], 1))
+        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[3], 1, stride = 2))
+        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[4], 1, stride = 2))
+        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[5], 1, stride = 2))
 
         #self.extraLayers = AddedLayers(output_channels[2])
 
@@ -160,7 +160,7 @@ class ResNextModel(torch.nn.Module):
             param.requires_grad = True                  # layers
         """
 
-    ## The following function is from the pytroch resnet implementation:
+    ## The following function is from the pytroch resnet implementation (modified):
     def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False):
         norm_layer = nn.BatchNorm2d
         downsample = None
@@ -175,7 +175,7 @@ class ResNextModel(torch.nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
+        layers.append(block(self.inplanes, planes, 1, downsample, self.groups,
                             self.base_width, previous_dilation, norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
