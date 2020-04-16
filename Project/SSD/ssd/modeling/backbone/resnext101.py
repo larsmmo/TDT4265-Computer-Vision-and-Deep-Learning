@@ -9,7 +9,7 @@ from torchvision import models
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1, padding=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=False, dilation=dilation)
+                     padding=padding, groups=groups, bias=False, dilation=dilation)
 
 
 def conv1x1(in_planes, out_planes, stride=1):
@@ -179,7 +179,7 @@ class ResNextModel(torch.nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, padding=padding, norm_layer=norm_layer))
+                            self.base_width, dilation=previous_dilation, padding = padding, norm_layer=norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
