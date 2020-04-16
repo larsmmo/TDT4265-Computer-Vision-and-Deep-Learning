@@ -140,7 +140,7 @@ class ResNextModel(torch.nn.Module):
         self.extraLayers = nn.Sequential(
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2)
+            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, dilation = 0)
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
@@ -164,7 +164,7 @@ class ResNextModel(torch.nn.Module):
         """
 
     ## The following function is from the pytroch resnet implementation (modified):
-    def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False):
+    def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, dilation = 1):
         norm_layer = nn.BatchNorm2d
         downsample = None
         previous_dilation = self.dilation
@@ -179,11 +179,11 @@ class ResNextModel(torch.nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, previous_dilation, norm_layer))
+                            self.base_width, dilation, norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
-                                base_width=self.base_width, dilation=self.dilation,
+                                base_width=self.base_width, dilation=dilation,
                                 norm_layer=norm_layer))
 
         return nn.Sequential(*layers)
