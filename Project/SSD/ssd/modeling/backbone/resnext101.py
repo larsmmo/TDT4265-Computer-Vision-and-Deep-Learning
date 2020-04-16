@@ -141,7 +141,8 @@ class ResNextModel(torch.nn.Module):
         self.extraLayers = nn.Sequential(
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
             self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding=1)
+            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding=1),
+            nn.AdaptiveAvgPool2d((1,1))
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
@@ -225,6 +226,7 @@ class ResNextModel(torch.nn.Module):
         out_features.append(out4)
 
         out5 = self.extraLayers[2](out4)
+        out5 = self.extraLayers[3](out5)        # Avgpool
         out_features.append(out5)
 
         
