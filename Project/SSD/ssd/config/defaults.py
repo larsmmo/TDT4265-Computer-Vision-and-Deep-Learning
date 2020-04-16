@@ -89,7 +89,7 @@ cfg.SOLVER.LR = 2e-2
 cfg.SOLVER.MOMENTUM = 0.9
 cfg.SOLVER.WEIGHT_DECAY = 5e-4
 cfg.SOLVER.WARMUP_FACTOR = 1.0 / 3
-cfg.SOLVER.WARMUP_ITERS = 500
+cfg.SOLVER.WARMUP_ITERS = 1000
 
 # ---------------------------------------------------------------------------- #
 # Specific test options

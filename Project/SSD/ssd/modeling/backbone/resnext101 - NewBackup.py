@@ -106,6 +106,53 @@ class Bottleneck(nn.Module):
 
 ##############################################
 
+class ConvBnRelu(torch.nn.Module):
+    
+    def __init__(self, in_ch, out_ch, kernel_size, padding, stride):
+        super(ConvBnRelu, self).__init__()
+        self.conv = nn.Conv2d(in_channels=in_ch,
+                              out_channels=out_ch,
+                              kernel_size=kernel_size, 
+                              padding=padding, 
+                              stride=stride, 
+                              bias=False)
+        self.bn = nn.BatchNorm2d(num_features=out_ch)
+        self.relu = nn.ReLU(inplace=True)
+        
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        x = self.relu(x)
+        return x
+
+
+class AddedLayers(torch.nn.Module):
+    def __init__(self, in_ch):
+        super(AddedLayers, self).__init__()
+
+        self.convLayer1_1 = ConvBnRelu(in_ch, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer1_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=1) 
+        self.convLayer2_1 = ConvBnRelu(512, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer2_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=2)
+        self.convLayer3_1 = ConvBnRelu(512, 256, kernel_size=1, padding=0, stride=1)
+        self.convLayer3_2 = ConvBnRelu(256, 512, kernel_size=3, padding=1, stride=2)
+
+        self.avgpool = nn.AdaptiveAvgPool2d(output_size=(1,1))
+
+    def forward(self,x):
+        out1_1 = self.convLayer1_1(x)
+        out1_2 = self.convLayer1_2(out1_1)
+        out2_1 = self.convLayer2_1(out1_2)
+        out2_2 = self.convLayer2_2(out2_1)
+        out3_1 = self.convLayer2_1(out2_2)
+        out3_2 = self.convLayer2_2(out3_1)
+
+        out_avg = self.avgpool(out3_2)
+
+        return out2_2, out3_2, out_avg
+
+
+
 class ResNextModel(torch.nn.Module):
     """
     This is a basic backbone for SSD.
@@ -119,7 +166,7 @@ class ResNextModel(torch.nn.Module):
      where "output_channels" is the same as cfg.BACKBONE.OUT_CHANNELS
     """
     def __init__(self, cfg):
-        super(ResNextModel, self).__init__()
+        super().__init__()
 
         image_size = cfg.INPUT.IMAGE_SIZE
         output_channels = cfg.MODEL.BACKBONE.OUT_CHANNELS
@@ -129,28 +176,17 @@ class ResNextModel(torch.nn.Module):
 
         self.model = models.resnet50(pretrained = True)
 
-        self.inplanes = 64
-        self.groups = 1
-        self.base_width = 64
-        self.dilation = 1
-
         #summary(self.model, (3, 370, 260))
-        # Adding extra layers for smaller feature maps: Residual blocks with downsampling
-        self.extraLayers = []
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[2], 1))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[3], 1))
-        self.extraLayers.append(self._make_extra_layer(Bottleneck, output_channels[4], 1))
+
+        self.extraLayer1 = _make_extra_layer(Bottleneck, output_channels[2], 1)
+        self.extraLayer2 = _make_extra_layer(Bottleneck, output_channels[3], 1)
+        self.extraLayer3 = _make_extra_layer(Bottleneck, output_channels[4], 1)
 
         #self.extraLayers = AddedLayers(output_channels[2])
 
-        # Initialize weights in extra layers with kaiming initialization
-        for layer in self.extraLayers:
-            for m in layer.modules():
-                if isinstance(m, nn.Conv2d):
-                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-                elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
+        for m in self.extraLayers.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
 
         """
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
@@ -162,7 +198,7 @@ class ResNextModel(torch.nn.Module):
 
     ## The following function is from the pytroch resnet implementation:
     def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False):
-        norm_layer = nn.BatchNorm2d
+        norm_layer = self._norm_layer
         downsample = None
         previous_dilation = self.dilation
         if dilate:
@@ -214,13 +250,10 @@ class ResNextModel(torch.nn.Module):
         out2 = self.model.layer4(out1)
         out_features.append(out2)
 
-        out3 = self.extraLayers[0](out2)
+        out3, out4, out5 = self.extraLayers(out2)
+
         out_features.append(out3)
-
-        out4 = self.extraLayers[1](out3)
         out_features.append(out4)
-
-        out5 = self.extraLayers[2](out4)
         out_features.append(out5)
 
         """

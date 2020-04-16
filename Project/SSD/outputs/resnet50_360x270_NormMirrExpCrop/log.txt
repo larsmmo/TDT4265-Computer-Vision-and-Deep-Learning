@@ -1,0 +1,773 @@
+2020-04-16 04:02:23,360 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 04:02:23,361 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 04:02:23,362 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 04:02:23,363 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 04:02:24,252 SSD.trainer INFO: No checkpoint found.
+2020-04-16 04:02:54,118 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 04:02:54,119 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 04:02:54,120 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 04:02:54,121 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 04:02:54,944 SSD.trainer INFO: No checkpoint found.
+2020-04-16 16:34:46,240 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 16:34:46,240 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 16:34:46,241 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 16:34:46,241 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 16:35:40,403 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 16:35:40,403 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 16:35:40,404 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 16:35:40,405 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 16:37:52,735 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 16:37:52,735 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 16:37:52,736 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 16:37:52,736 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 16:40:46,360 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 16:40:46,361 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 16:40:46,362 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 16:40:46,362 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 17:53:40,930 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 17:53:40,931 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 17:53:40,932 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 17:53:40,932 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 18:01:05,932 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 18:01:05,933 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 18:01:05,934 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 18:01:05,935 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 18:06:07,250 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 18:06:07,250 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 18:06:07,251 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 18:06:07,252 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 18:06:29,046 SSD INFO: Namespace(config_file='configs/train_waymo.yaml', opts=[])
+2020-04-16 18:06:29,047 SSD INFO: Loaded configuration file configs/train_waymo.yaml
+2020-04-16 18:06:29,048 SSD INFO: 
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [512, 1024, 2048, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("waymo_train",)
+    TEST: ("waymo_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [60000, 80000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 3e-4
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+DATASET_DIR: "datasets"
+2020-04-16 18:06:29,048 SSD INFO: Running with config:
+DATASETS:
+  TEST: ('waymo_val',)
+  TRAIN: ('waymo_train',)
+DATASET_DIR: datasets
+DATA_LOADER:
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+EVAL_STEP: 500
+INPUT:
+  IMAGE_SIZE: (360, 270)
+  PIXEL_MEAN: [123, 117, 104]
+LOG_STEP: 10
+MODEL:
+  BACKBONE:
+    INPUT_CHANNELS: 3
+    NAME: resnext101
+    OUT_CHANNELS: (512, 1024, 2048, 512, 512, 512)
+    PRETRAINED: True
+  BOX_HEAD:
+    NAME: SSDBoxHead
+    PREDICTOR: SSDBoxPredictor
+  CENTER_VARIANCE: 0.1
+  META_ARCHITECTURE: SSDDetector
+  NEG_POS_RATIO: 3
+  NUM_CLASSES: 5
+  PRIORS:
+    ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+    BOXES_PER_LOCATION: [4, 6, 6, 6, 4, 4]
+    CLIP: True
+    FEATURE_MAPS: [(45, 34), (23, 17), (12, 9), (6, 5), (3, 3), (1, 1)]
+    MAX_SIZES: [64, 128, 192, 256, 310, 374]
+    MIN_SIZES: [30, 60, 111, 162, 213, 264]
+    STRIDES: [(8, 8), (16, 16), (30, 30), (60, 54), (120, 90), (360, 270)]
+  SIZE_VARIANCE: 0.2
+  THRESHOLD: 0.5
+MODEL_SAVE_STEP: 500
+OUTPUT_DIR: outputs/resnet50_360x270_NormMirrExpCrop
+SOLVER:
+  BATCH_SIZE: 16
+  GAMMA: 0.1
+  LR: 0.0003
+  LR_STEPS: [60000, 80000]
+  MAX_ITER: 120000
+  MOMENTUM: 0.9
+  WARMUP_FACTOR: 0.3333333333333333
+  WARMUP_ITERS: 1000
+  WEIGHT_DECAY: 0.0005
+TEST:
+  BATCH_SIZE: 10
+  CONFIDENCE_THRESHOLD: 0.01
+  MAX_PER_CLASS: -1
+  MAX_PER_IMAGE: 100
+  NMS_THRESHOLD: 0.45
+2020-04-16 18:06:30,751 SSD.trainer INFO: No checkpoint found.
