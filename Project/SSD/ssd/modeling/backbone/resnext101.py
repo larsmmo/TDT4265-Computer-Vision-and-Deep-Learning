@@ -144,6 +144,7 @@ class ResNextModel(torch.nn.Module):
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
+        print(self.extraLayers[0])
 
         # Initialize weights in extra layers with kaiming initialization
         for layer in self.extraLayers:
@@ -177,7 +178,7 @@ class ResNextModel(torch.nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, 1, downsample, self.groups,
+        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
                             self.base_width, previous_dilation, norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
