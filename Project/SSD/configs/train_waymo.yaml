@@ -16,5 +16,5 @@ SOLVER:
     GAMMA: 0.1
     BATCH_SIZE: 16
     LR: 3e-4
-OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrExpCrop'
+OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrCrop_resBlock'
 DATASET_DIR: "datasets"
