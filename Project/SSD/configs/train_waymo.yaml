@@ -3,7 +3,7 @@ MODEL:
     BACKBONE:
         NAME: 'resnext101'
         PRETRAINED: True
-        OUT_CHANNELS: [512, 1024, 2048, 2048, 2048, 2048]
+        OUT_CHANNELS: [1024, 2048, 2048, 2048, 2048, 2048]
         INPUT_CHANNELS: 3
 INPUT:
     IMAGE_SIZE: (360,270)
@@ -12,9 +12,9 @@ DATASETS:
     TEST: ("waymo_val", )
 SOLVER:
     MAX_ITER: 120000
-    LR_STEPS: [60000, 80000]
+    LR_STEPS: [30000, 80000]
     GAMMA: 0.1
     BATCH_SIZE: 16
-    LR: 3e-4
-OUTPUT_DIR: 'outputs/resnet50_360x270_NormMirrCrop_resBlock'
+    LR: 1e-4
+OUTPUT_DIR: 'outputs/resnet34_360x270_resBlock_frozen12'
 DATASET_DIR: "datasets"

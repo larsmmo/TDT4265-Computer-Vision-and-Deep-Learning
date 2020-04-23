@@ -128,7 +128,7 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
-        self.model = models.resnet50(pretrained = True)
+        self.model = models.resnet34(pretrained = True)
 
         self.inplanes = output_channels[2]
         self.groups = 1
@@ -157,13 +157,15 @@ class ResNextModel(torch.nn.Module):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
 
-        """
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
             param.requires_grad = False
 
+        for param in self.model.layer3.parameters():    # Unfreeze some of the last convolutional
+            param.requires_grad = True                  # layers
+
         for param in self.model.layer4.parameters():    # Unfreeze some of the last convolutional
             param.requires_grad = True                  # layers
-        """
+
 
     ## The following function is from the pytroch resnet implementation (modified):
     def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, padding=1):
@@ -207,11 +209,11 @@ class ResNextModel(torch.nn.Module):
         x = self.model.conv1(x)
         x = self.model.bn1(x)
         x = self.model.relu(x)
-        x = self.model.maxpool(x)
+        #x = self.model.maxpool(x)
         x = self.model.layer1(x)
 
         out0 = self.model.layer2(x)
-        out_features.append(out0)
+        #out_features.append(out0)
 
         out1 = self.model.layer3(out0)
         out_features.append(out1)
@@ -226,8 +228,10 @@ class ResNextModel(torch.nn.Module):
         out_features.append(out4)
 
         out5 = self.extraLayers[2](out4)
-        out5 = self.extraLayers[3](out5)        # Avgpool
         out_features.append(out5)
+
+        out6 = self.extraLayers[3](out5) 
+        out_features.append(out6)
 
         
         for idx, feature in enumerate(out_features):
