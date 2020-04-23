@@ -233,11 +233,12 @@ class ResNextModel(torch.nn.Module):
         out6 = self.extraLayers[3](out5) 
         out_features.append(out6)
 
-        
+        """
         for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx][1], self.output_feature_size[idx][0])
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
+        """
         
         return tuple(out_features)
 
