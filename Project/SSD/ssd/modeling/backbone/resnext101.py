@@ -139,9 +139,9 @@ class ResNextModel(torch.nn.Module):
         # Adding extra layers for smaller feature maps: Residual blocks with downsampling
         
         self.extraLayers = nn.Sequential(
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2),
-            self._make_extra_layer(Bottleneck, 512, 1, stride = 2, padding=1),
+            self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
+            self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
+            self._make_extra_layer(BasicBlock, 512, 1, stride = 2, padding=1),
             nn.AdaptiveAvgPool2d((1,1))
         )
 
@@ -166,6 +166,8 @@ class ResNextModel(torch.nn.Module):
         for param in self.model.layer4.parameters():    # Unfreeze some of the last convolutional
             param.requires_grad = True                  # layers
 
+
+        print(self.extraLayers)
 
     ## The following function is from the pytroch resnet implementation (modified):
     def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, padding=1):
@@ -239,6 +241,6 @@ class ResNextModel(torch.nn.Module):
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         """
-        
+
         return tuple(out_features)
 
