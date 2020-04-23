@@ -3,7 +3,7 @@ MODEL:
     BACKBONE:
         NAME: 'resnext101'
         PRETRAINED: True
-        OUT_CHANNELS: [1024, 2048, 2048, 2048, 2048, 2048]
+        OUT_CHANNELS: [128, 512, 512, 512, 512, 512]
         INPUT_CHANNELS: 3
 INPUT:
     IMAGE_SIZE: (360,270)
