@@ -110,6 +110,22 @@ class Bottleneck(nn.Module):
 # Light scratch network inspired by: https://github.com/vaesl/LRF-Net/blob/master/models/LRF_COCO_300.py
 #http://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_Learning_Rich_Features_at_High-Speed_for_Single-Shot_Object_Detection_ICCV_2019_paper.pdf
 
+class ConvBlock(torch.nn.Module):
+    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1, relu = True):
+        super(ConvBlock, self).__init__()
+        self.out_channels = out_planes
+        self.conv = nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation, groups=1, bias=False) 
+        self.bn = nn.BatchNorm2d(out_planes, eps=1e-5, momentum=0.01, affine=True)
+        self.relu = nn.ReLU(inplace=False) if relu else None
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        if self.relu is not None:
+            x = self.relu(x)
+
+        return x
+
 class LargeDownsampler(torch.nn.Module):
     def __init__(self,):
         self.maxPool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=2, padding=0)
@@ -122,6 +138,51 @@ class LargeDownsampler(torch.nn.Module):
         x_out = self.pool3(x)
         return x_out
 
+class LightScratchNetwork(torch.nn.Module):
+    def __init__(self, in_planes, out_planes, stride = 1):
+        super(LightScratchNetwork, self).__init__()
+        inter_planes = out_planes // 4
+        self.downsampler = LargeDownsampler()
+        self.commonConvs = nn.Sequential(
+                ConvBlock(in_planes, out_planes, kernel_size=(3, 3), stride=stride, padding=1),
+                ConvBlock(inter_planes, inter_planes, kernel_size=1, stride=1),
+                ConvBlock(inter_planes, inter_planes, kernel_size=(3, 3), stride=stride, padding=1)
+                )
+        self.conv1_out = ConvBlock(inter_planes, out_planes, kernel_size=1, stride=1, relu=False)
+
+        self.conv2 = ConvBlock(inter_planes, inter_planes, kernel_size=(3, 3), stride=stride, padding=1)
+        self.conv2_out = ConvBlock(inter_planes, out_planes * 2, kernel_size=1, stride=1, relu=False)
+
+        self.conv3 = ConvBlock(inter_planes, inter_planes, kernel_size=(3, 3), stride=stride, padding=1)
+        self.conv3_out = ConvBlock(inter_planes, out_planes, kernel_size=1, stride=1, relu=False)
+
+        #self.conv4 = ConvBlock(inter_planes, inter_planes, kernel_size=(3, 3), stride=stride, padding=1)
+        #self.conv4_out = ConvBlock(inter_planes, out_planes, kernel_size=1, stride=1, relu=False)
+
+    def forward(self,x):
+        x = self.downsampler(x)     # Downsample image
+        x = self.commonConvs(x) 
+        out1 = self.conv1_out(x)
+        x = self.conv2(x)
+        out2 = self.conv2_out(x)
+        x = self.conv3(x)
+        out3 = self.conv3_out(x) 
+
+        return out1, out2, out3
+
+class BottomUpModule(torch.nn.Module):
+    def __init__(self, in_ch, out_ch):
+        super(BottomUpModule, self).__init__()
+        self.lateral_layer = nn.Conv2d(in_ch, in_ch, kernel_size=1, stride=1, padding=0)
+        self.smooth_layer = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=1, padding=1)
+
+    def forward(self, smallFeature, bigFeature):
+        _,_,H,W = bigFeature.size()
+
+        x = F.upsample(smallFeature, size=(H,W), mode='bilinear') + self.lateral_layer(bigFeature)
+        x = self.smooth_layer(x)
+
+        return x
 
 
 class ResNextModel(torch.nn.Module):
@@ -145,7 +206,25 @@ class ResNextModel(torch.nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
 
+        # Backbone model
         self.model = models.resnet34(pretrained = True)
+
+        # Bottom up modules for feature pyramid network
+        self.BU1 = BottomUpModule(output_channels[5], output_channels[4])
+        self.BU2 = BottomUpModule(output_channels[4], output_channels[3])
+        self.BU3 = BottomUpModule(output_channels[3], output_channels[2])
+        self.BU4 = BottomUpModule(output_channels[2], output_channels[1])
+        self.BU5 = BottomUpModule(output_channels[1], output_channels[0])
+
+        """
+        # Light-weight scratch network
+        self.LSN = LightScratchNetwork(image_channels, 512)
+
+        # Convs with downsampling for bottom-up scheme
+        self.ds_conv1 = ConvBlock(output_channels[0], out_planes, kernel_size=(3, 3), stride=stride, padding=padding, relu=False)
+        self.ds_conv2 = ConvBlock(output_channels[1], out_planes, kernel_size=(3, 3), stride=stride, padding=padding, relu=False)
+        self.ds_conv3 = ConvBlock(output_channels[2], out_planes, kernel_size=(3, 3), stride=stride, padding=padding, relu=False)
+        """
 
         self.inplanes = output_channels[2]
         self.groups = 1
@@ -163,7 +242,6 @@ class ResNextModel(torch.nn.Module):
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
-        print(self.extraLayers[2])
 
         # Initialize weights in extra layers with kaiming initialization
         for layer in self.extraLayers:
@@ -225,6 +303,9 @@ class ResNextModel(torch.nn.Module):
             shape(-1, output_channels[0], 38, 38),
         """
         out_features = []
+
+        lsn_out1, lsn_out2, lsn_out3 = self.LSN(x)      # Pass image through light-weight scratch network
+
         x = self.model.conv1(x)
         x = self.model.bn1(x)
         x = self.model.relu(x)
@@ -234,23 +315,19 @@ class ResNextModel(torch.nn.Module):
         out0 = self.model.layer2(x)
         #out_features.append(out0)
 
-        out1 = self.model.layer3(out0)
-        out_features.append(out1)
+        feature1 = self.model.layer3(out0)
+        feature2 = self.model.layer4(out1)
+        feature3 = self.extraLayers[0](out2)
+        feature4 = self.extraLayers[1](out3)
+        feature5 = self.extraLayers[2](out4)
+        feature6 = self.extraLayers[3](out5) 
 
-        out2 = self.model.layer4(out1)
-        out_features.append(out2)
+        p5 = self.BU1(feature5, feature6)
+        p4 = self.BU2(feature4, p5)
+        p3 = self.BU3(feature3, p4)
+        p2 = self.BU4(feature2, p3)
+        p1 = self.BU5(feature1, p2)
 
-        out3 = self.extraLayers[0](out2)
-        out_features.append(out3)
-
-        out4 = self.extraLayers[1](out3)
-        out_features.append(out4)
-
-        out5 = self.extraLayers[2](out4)
-        out_features.append(out5)
-
-        out6 = self.extraLayers[3](out5) 
-        out_features.append(out6)
 
         """
         for idx, feature in enumerate(out_features):
@@ -259,5 +336,5 @@ class ResNextModel(torch.nn.Module):
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         """
 
-        return tuple(out_features)
+        return tuple(p1, p2, p3, p4, p5, feature6)
 
