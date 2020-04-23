@@ -12,7 +12,7 @@ DATASETS:
     TEST: ("waymo_val", )
 SOLVER:
     MAX_ITER: 120000
-    LR_STEPS: [30000, 80000]
+    LR_STEPS: [30000, 60000]
     GAMMA: 0.1
     BATCH_SIZE: 16
     LR: 1e-4
