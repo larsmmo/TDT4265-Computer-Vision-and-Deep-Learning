@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torchvision import models
+import torch.nn.functional as F
 #from torchsummary import summary
 
 ##############################################
@@ -106,6 +107,22 @@ class Bottleneck(nn.Module):
         return out
 
 ##############################################
+# Light scratch network inspired by: https://github.com/vaesl/LRF-Net/blob/master/models/LRF_COCO_300.py
+#http://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_Learning_Rich_Features_at_High-Speed_for_Single-Shot_Object_Detection_ICCV_2019_paper.pdf
+
+class LargeDownsampler(torch.nn.Module):
+    def __init__(self,):
+        self.maxPool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=2, padding=0)
+        self.maxPool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2, padding=0)
+        self.maxPool3 = nn.MaxPool2d(kernel_size=(2, 2), stride=2, padding=1)
+
+    def forward(self, x):
+        x = self.pool1(x)
+        x = self.pool2(x)
+        x_out = self.pool3(x)
+        return x_out
+
+
 
 class ResNextModel(torch.nn.Module):
     """
@@ -157,6 +174,7 @@ class ResNextModel(torch.nn.Module):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
 
+        """
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
             param.requires_grad = False
 
@@ -165,9 +183,8 @@ class ResNextModel(torch.nn.Module):
 
         for param in self.model.layer4.parameters():    # Unfreeze some of the last convolutional
             param.requires_grad = True                  # layers
+        """
 
-
-        print(self.extraLayers)
 
     ## The following function is from the pytroch resnet implementation (modified):
     def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, padding=1):
