@@ -16,5 +16,5 @@ SOLVER:
     GAMMA: 0.1
     BATCH_SIZE: 16
     LR: 1e-4
-OUTPUT_DIR: 'outputs/resnet34_360x270_resBlock_frozen12'
+OUTPUT_DIR: 'outputs/resnet34_360x270_resBlock_unfrozen'
 DATASET_DIR: "datasets"
