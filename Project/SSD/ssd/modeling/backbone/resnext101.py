@@ -214,11 +214,11 @@ class ResNextModel(torch.nn.Module):
         self.model = models.resnet34(pretrained = True)
 
         # Top-down modules for feature pyramid network
-        self.TD1 = TopDownModule(output_channels[5], output_channels[4])
-        self.TD2 = TopDownModule(output_channels[4], output_channels[3])
-        self.TD3 = TopDownModule(output_channels[3], output_channels[2])
-        self.TD4 = TopDownModule(output_channels[2], output_channels[1])
-        self.TD5 = TopDownModule(output_channels[1], output_channels[0])
+        self.TD1 = TopDownModule(output_channels[4], output_channels[5])
+        self.TD2 = TopDownModule(output_channels[3], output_channels[4])
+        self.TD3 = TopDownModule(output_channels[2], output_channels[3])
+        self.TD4 = TopDownModule(output_channels[1], output_channels[2])
+        self.TD5 = TopDownModule(output_channels[0], output_channels[1])
 
         """
         # Light-weight scratch network
