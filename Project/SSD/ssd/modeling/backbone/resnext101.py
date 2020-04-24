@@ -339,5 +339,5 @@ class ResNextModel(torch.nn.Module):
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         """ 
         #return (feature1, feature2, feature3, feature4, feature5, feature6)
-        return tuple(p1, p2, p3, p4, p5, feature6)
+        return (p1, p2, p3, p4, p5, feature6)
 
