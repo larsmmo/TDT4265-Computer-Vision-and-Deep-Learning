@@ -176,10 +176,14 @@ class TopDownModule(torch.nn.Module):
         self.lateral_layer = nn.Conv2d(in_ch, out_ch, kernel_size=1, stride=1, padding=0)
         self.smooth_layer = nn.Conv2d(out_ch, out_ch, kernel_size=3, stride=1, padding=1)
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.xavier_uniform_(m.weight)
+
     def forward(self, smallFeature, bigFeature):
         _,_,H,W = bigFeature.size()
 
-        x = F.upsample(smallFeature, size=(H,W), mode='bilinear') + self.lateral_layer(bigFeature)
+        x = F.interpolate(smallFeature, size=(H,W), mode='bilinear', align_corners=True) + self.lateral_layer(bigFeature)
         x = self.smooth_layer(x)
 
         return x
@@ -312,10 +316,10 @@ class ResNextModel(torch.nn.Module):
         #x = self.model.maxpool(x)
         x = self.model.layer1(x)
 
-        out0 = self.model.layer2(x)
+        x = self.model.layer2(x)
         #out_features.append(out0)
 
-        feature1 = self.model.layer3(out0)
+        feature1 = self.model.layer3(x)
         feature2 = self.model.layer4(feature1)
         feature3 = self.extraLayers[0](feature2)
         feature4 = self.extraLayers[1](feature3)
@@ -334,6 +338,6 @@ class ResNextModel(torch.nn.Module):
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         """ 
-        return (feature1, feature2, feature3, feature4, feature5, feature6)
-        #return tuple(p1, p2, p3, p4, p5, feature6)
+        #return (feature1, feature2, feature3, feature4, feature5, feature6)
+        return tuple(p1, p2, p3, p4, p5, feature6)
 
