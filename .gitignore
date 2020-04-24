@@ -1,4 +1,6 @@
 .outputs/
+.datasets/
+datasets/
 outputs/
 .vscode
 __pycache__/

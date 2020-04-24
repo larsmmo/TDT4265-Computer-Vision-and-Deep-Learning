@@ -1,0 +1,20 @@
+MODEL:
+    NUM_CLASSES: 5
+    BACKBONE:
+        NAME: 'resnext101'
+        PRETRAINED: True
+        OUT_CHANNELS: [256, 512, 512, 512, 512, 512]
+        INPUT_CHANNELS: 3
+INPUT:
+    IMAGE_SIZE: (360,270)
+DATASETS:
+    TRAIN: ("tdt4265_train",)
+    TEST: ("tdt4265_val", )
+SOLVER:
+    MAX_ITER: 120000
+    LR_STEPS: [30000, 60000]
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    LR: 1e-4
+OUTPUT_DIR: outputs/resnet34_360x270_resBlock_unfrozen_tdt4265
+DATASET_DIR: "datasets"
