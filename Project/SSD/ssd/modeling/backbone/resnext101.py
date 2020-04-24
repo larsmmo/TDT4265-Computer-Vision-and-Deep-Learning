@@ -307,7 +307,7 @@ class ResNextModel(torch.nn.Module):
         """
         out_features = []
 
-        lsn_out1, lsn_out2, lsn_out3 = self.LSN(x)      # Pass image through light-weight scratch network
+        #lsn_out1, lsn_out2, lsn_out3 = self.LSN(x)      # Pass image through light-weight scratch network
 
         x = self.model.conv1(x)
         x = self.model.bn1(x)
