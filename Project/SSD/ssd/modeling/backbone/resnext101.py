@@ -180,7 +180,7 @@ class TopDownModule(torch.nn.Module):
             if isinstance(m, nn.Conv2d):
                 nn.init.xavier_uniform_(m.weight)
 
-    def forward(self, smallFeature, bigFeature):
+    def forward(self, bigFeature, smallFeature):
         _,_,H,W = bigFeature.size()
 
         x = F.interpolate(smallFeature, size=(H,W), mode='bilinear', align_corners=True) + self.lateral_layer(bigFeature)
