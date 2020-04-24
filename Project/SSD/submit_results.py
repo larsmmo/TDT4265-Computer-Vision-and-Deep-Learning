@@ -118,6 +118,7 @@ def main():
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
+    print(cfg.OUTPUT_DIR)
     detections = get_detections(
         cfg=cfg,
         ckpt=args.ckpt)
