@@ -209,12 +209,15 @@ class ResNextModel(torch.nn.Module):
         # Backbone model
         self.model = models.resnet34(pretrained = True)
 
+        """
+
         # Bottom up modules for feature pyramid network
         self.BU1 = BottomUpModule(output_channels[5], output_channels[4])
         self.BU2 = BottomUpModule(output_channels[4], output_channels[3])
         self.BU3 = BottomUpModule(output_channels[3], output_channels[2])
         self.BU4 = BottomUpModule(output_channels[2], output_channels[1])
         self.BU5 = BottomUpModule(output_channels[1], output_channels[0])
+        """
 
         """
         # Light-weight scratch network
@@ -322,11 +325,13 @@ class ResNextModel(torch.nn.Module):
         feature5 = self.extraLayers[2](out4)
         feature6 = self.extraLayers[3](out5) 
 
+        """
         p5 = self.BU1(feature5, feature6)
         p4 = self.BU2(feature4, p5)
         p3 = self.BU3(feature3, p4)
         p2 = self.BU4(feature2, p3)
         p1 = self.BU5(feature1, p2)
+        """
 
 
         """
