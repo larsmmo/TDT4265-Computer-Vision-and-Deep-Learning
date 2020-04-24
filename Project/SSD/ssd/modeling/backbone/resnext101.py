@@ -332,6 +332,7 @@ class ResNextModel(torch.nn.Module):
         p2 = self.TD4(feature2, p3)
         p1 = self.TD5(feature1, p2)
         
+        """
         out_features.append(p1)
         out_features.append(p2)
         out_features.append(p3)
@@ -339,7 +340,7 @@ class ResNextModel(torch.nn.Module):
         out_features.append(p5)
         out_features.append(feature6)
         
-        """
+        
         for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx][1], self.output_feature_size[idx][0])
             assert feature.shape[1:] == expected_shape, \
