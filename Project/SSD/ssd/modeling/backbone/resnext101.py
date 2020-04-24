@@ -332,12 +332,18 @@ class ResNextModel(torch.nn.Module):
         p2 = self.TD4(feature2, p3)
         p1 = self.TD5(feature1, p2)
         
+        out_features.append(p1)
+        out_features.append(p2)
+        out_features.append(p3)
+        out_features.append(p4)
+        out_features.append(p5)
+        out_features.append(feature6)
         
         for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx][1], self.output_feature_size[idx][0])
             assert feature.shape[1:] == expected_shape, \
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
-        
+        print("Passed tests")
         #return (feature1, feature2, feature3, feature4, feature5, feature6)
         return (p1, p2, p3, p4, p5, feature6)
 
