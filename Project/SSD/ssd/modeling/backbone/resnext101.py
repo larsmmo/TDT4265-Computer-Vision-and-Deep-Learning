@@ -218,7 +218,7 @@ class ResNextModel(torch.nn.Module):
         self.TD2 = TopDownModule(output_channels[3], output_channels[4])
         self.TD3 = TopDownModule(output_channels[2], output_channels[3])
         self.TD4 = TopDownModule(output_channels[1], output_channels[2])
-        self.TD5 = TopDownModule(output_channels[0], output_channels[1])
+        self.TD5 = TopDownModule(256, output_channels[1])
 
         """
         # Light-weight scratch network
