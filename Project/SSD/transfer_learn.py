@@ -10,7 +10,7 @@ if __name__ == "__main__":
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
 
-    checkpoint = pathlib.Path(cfg.OUTPUT_DIR, "model_final.pth")
+    checkpoint = pathlib.Path(cfg.OUTPUT_DIR, "model_52500.pth")
     assert checkpoint.is_file()
     # Create a new directory for new training run
     new_dir = checkpoint.parent.parent
