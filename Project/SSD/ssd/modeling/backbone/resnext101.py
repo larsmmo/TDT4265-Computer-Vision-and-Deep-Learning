@@ -173,8 +173,8 @@ class LightScratchNetwork(torch.nn.Module):
 class TopDownModule(torch.nn.Module):
     def __init__(self, in_ch, out_ch):
         super(TopDownModule, self).__init__()
-        self.lateral_layer = nn.Conv2d(in_ch, in_ch, kernel_size=1, stride=1, padding=0)
-        self.smooth_layer = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=1, padding=1)
+        self.lateral_layer = nn.Conv2d(in_ch, out_ch, kernel_size=1, stride=1, padding=0)
+        self.smooth_layer = nn.Conv2d(out_ch, out_ch, kernel_size=3, stride=1, padding=1)
 
     def forward(self, smallFeature, bigFeature):
         _,_,H,W = bigFeature.size()
