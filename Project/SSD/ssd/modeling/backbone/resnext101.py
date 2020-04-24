@@ -319,11 +319,11 @@ class ResNextModel(torch.nn.Module):
         #out_features.append(out0)
 
         feature1 = self.model.layer3(out0)
-        feature2 = self.model.layer4(out1)
-        feature3 = self.extraLayers[0](out2)
-        feature4 = self.extraLayers[1](out3)
-        feature5 = self.extraLayers[2](out4)
-        feature6 = self.extraLayers[3](out5) 
+        feature2 = self.model.layer4(feature1)
+        feature3 = self.extraLayers[0](feature2)
+        feature4 = self.extraLayers[1](feature3)
+        feature5 = self.extraLayers[2](feature4)
+        feature6 = self.extraLayers[3](feature5) 
 
         """
         p5 = self.BU1(feature5, feature6)
