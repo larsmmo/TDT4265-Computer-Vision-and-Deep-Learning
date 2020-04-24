@@ -170,9 +170,9 @@ class LightScratchNetwork(torch.nn.Module):
 
         return out1, out2, out3
 
-class BottomUpModule(torch.nn.Module):
+class TopDownModule(torch.nn.Module):
     def __init__(self, in_ch, out_ch):
-        super(BottomUpModule, self).__init__()
+        super(TopDownModule, self).__init__()
         self.lateral_layer = nn.Conv2d(in_ch, in_ch, kernel_size=1, stride=1, padding=0)
         self.smooth_layer = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=1, padding=1)
 
@@ -209,15 +209,12 @@ class ResNextModel(torch.nn.Module):
         # Backbone model
         self.model = models.resnet34(pretrained = True)
 
-        """
-
-        # Bottom up modules for feature pyramid network
-        self.BU1 = BottomUpModule(output_channels[5], output_channels[4])
-        self.BU2 = BottomUpModule(output_channels[4], output_channels[3])
-        self.BU3 = BottomUpModule(output_channels[3], output_channels[2])
-        self.BU4 = BottomUpModule(output_channels[2], output_channels[1])
-        self.BU5 = BottomUpModule(output_channels[1], output_channels[0])
-        """
+        # Top-down modules for feature pyramid network
+        self.TD1 = TopDownModule(output_channels[5], output_channels[4])
+        self.TD2 = TopDownModule(output_channels[4], output_channels[3])
+        self.TD3 = TopDownModule(output_channels[3], output_channels[2])
+        self.TD4 = TopDownModule(output_channels[2], output_channels[1])
+        self.TD5 = TopDownModule(output_channels[1], output_channels[0])
 
         """
         # Light-weight scratch network
@@ -325,15 +322,12 @@ class ResNextModel(torch.nn.Module):
         feature5 = self.extraLayers[2](feature4)
         feature6 = self.extraLayers[3](feature5) 
 
-        """
-        p5 = self.BU1(feature5, feature6)
-        p4 = self.BU2(feature4, p5)
-        p3 = self.BU3(feature3, p4)
-        p2 = self.BU4(feature2, p3)
-        p1 = self.BU5(feature1, p2)
-        """
-
-
+        p5 = self.TD1(feature5, feature6)
+        p4 = self.TD2(feature4, p5)
+        p3 = self.TD3(feature3, p4)
+        p2 = self.TD4(feature2, p3)
+        p1 = self.TD5(feature1, p2)
+        
         """
         for idx, feature in enumerate(out_features):
             expected_shape = (self.output_channels[idx], self.output_feature_size[idx][1], self.output_feature_size[idx][0])
