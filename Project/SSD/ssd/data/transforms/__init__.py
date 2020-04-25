@@ -8,7 +8,6 @@ def build_transforms(cfg, is_train=True):
     if is_train:
         transform = [
             ConvertFromInts(),
-            #Expand(cfg.INPUT.PIXEL_MEAN),
             RandomSampleCrop(),
             RandomMirror(),
             ToPercentCoords(),
@@ -17,6 +16,10 @@ def build_transforms(cfg, is_train=True):
             Normalize(cfg.INPUT.PIXEL_MEAN, [0.229*255, 0.224*255, 0.225*255]),
             ToTensor(),
         ]
+
+        if cfg.DATASETS.TRAIN[0].startswith("tdt4265"):
+            transform.insert(3, PhotometricDistort())
+            
     else:
         transform = [
             Resize(cfg.INPUT.IMAGE_SIZE),

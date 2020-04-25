@@ -34,7 +34,7 @@ class BasicBlock(nn.Module):
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
         self.relu = nn.ReLU(inplace=True)
-        self.conv2 = conv3x3(planes, planes)
+        self.conv2 = conv3x3(planes, planes, stride = 1, groups = 1, dilation=1, padding=padding)
         self.bn2 = norm_layer(planes)
         self.downsample = downsample
         self.stride = stride
@@ -214,8 +214,8 @@ class ResNextModel(torch.nn.Module):
         self.model = models.resnet34(pretrained = True)
 
         # Top-down modules for feature pyramid network
-        self.TD1 = TopDownModule(output_channels[4], output_channels[5])
-        self.TD2 = TopDownModule(output_channels[3], output_channels[4])
+        #self.TD1 = TopDownModule(output_channels[4], output_channels[5])
+        #self.TD2 = TopDownModule(output_channels[3], output_channels[4])
         self.TD3 = TopDownModule(output_channels[2], output_channels[3])
         self.TD4 = TopDownModule(output_channels[1], output_channels[2])
         self.TD5 = TopDownModule(256, output_channels[1])
@@ -242,7 +242,7 @@ class ResNextModel(torch.nn.Module):
             self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
             self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
             self._make_extra_layer(BasicBlock, 512, 1, stride = 2, padding=1),
-            nn.AdaptiveAvgPool2d((1,1))
+            self._make_extra_layer(BasicBlock, 512, 1, stride = 1, padding=0)
         )
 
         #self.extraLayers = AddedLayers(output_channels[2])
@@ -255,6 +255,10 @@ class ResNextModel(torch.nn.Module):
                 elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
+
+        for m in self.modules():
+            if isinstance(m, BasicBlock):
+                nn.init.constant_(m.bn2.weight, 0)
 
         """
         for param in self.model.parameters(): # Freeze all parameters while training on waymo
@@ -276,7 +280,7 @@ class ResNextModel(torch.nn.Module):
         if dilate:
             self.dilation *= stride
             stride = 1
-        if stride != 1 or self.inplanes != planes * block.expansion:
+        if stride != 1 #or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
                 conv1x1(self.inplanes, planes * block.expansion, stride),
                 norm_layer(planes * block.expansion),
@@ -326,9 +330,7 @@ class ResNextModel(torch.nn.Module):
         feature5 = self.extraLayers[2](feature4)
         feature6 = self.extraLayers[3](feature5) 
 
-        p5 = self.TD1(feature5, feature6)
-        p4 = self.TD2(feature4, p5)
-        p3 = self.TD3(feature3, p4)
+        p3 = self.TD3(feature3, feature4)
         p2 = self.TD4(feature2, p3)
         p1 = self.TD5(feature1, p2)
         
@@ -348,5 +350,5 @@ class ResNextModel(torch.nn.Module):
         print("Passed tests")
         """
         #return (feature1, feature2, feature3, feature4, feature5, feature6)
-        return (p1, p2, p3, p4, p5, feature6)
+        return (p1, p2, p3, feature4, feature5, feature6)
 

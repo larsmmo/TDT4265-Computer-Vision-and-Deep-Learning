@@ -89,7 +89,7 @@ cfg.SOLVER.LR = 2e-2
 cfg.SOLVER.MOMENTUM = 0.9
 cfg.SOLVER.WEIGHT_DECAY = 5e-4
 cfg.SOLVER.WARMUP_FACTOR = 1.0 / 3
-cfg.SOLVER.WARMUP_ITERS = 1000
+cfg.SOLVER.WARMUP_ITERS = 1500
 
 # ---------------------------------------------------------------------------- #
 # Specific test options
@@ -104,8 +104,8 @@ cfg.TEST.BATCH_SIZE = 10
 # ---------------------------------------------------------------------------- #
 # Specific test options
 # ---------------------------------------------------------------------------- #
-cfg.EVAL_STEP = 500 # Evaluate dataset every eval_step, disabled when eval_step < 0
-cfg.MODEL_SAVE_STEP = 2500 # Save checkpoint every save_step
-cfg.LOG_STEP = 10 # Print logs every log_stepPrint logs every log_step
+cfg.EVAL_STEP = 1000 # Evaluate dataset every eval_step, disabled when eval_step < 0
+cfg.MODEL_SAVE_STEP = 2000 # Save checkpoint every save_step
+cfg.LOG_STEP = 20 # Print logs every log_stepPrint logs every log_step
 cfg.OUTPUT_DIR = "outputs"
 cfg.DATASET_DIR = "datasets"

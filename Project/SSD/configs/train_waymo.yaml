@@ -11,10 +11,10 @@ DATASETS:
     TRAIN: ("waymo_train",)
     TEST: ("waymo_val", )
 SOLVER:
-    MAX_ITER: 120000
-    LR_STEPS: [30000, 60000]
+    MAX_ITER: 80000
+    LR_STEPS: [24000, 34000]
     GAMMA: 0.1
-    BATCH_SIZE: 16
-    LR: 1e-4
-OUTPUT_DIR: 'outputs/resnet34_360x270_FPN'
+    BATCH_SIZE: 32
+    LR: 2e-4
+OUTPUT_DIR: 'outputs/resnet34_360x270_FPNV2_photometric'
 DATASET_DIR: "datasets"

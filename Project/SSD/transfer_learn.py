@@ -11,7 +11,7 @@ if __name__ == "__main__":
     cfg.merge_from_list(args.opts)
 
     print(cfg.OUTPUT_DIR)
-    checkpoint = pathlib.Path(cfg.OUTPUT_DIR, "model_052500.pth")
+    checkpoint = pathlib.Path(cfg.OUTPUT_DIR, "model_037500.pth")
     assert checkpoint.is_file()
     # Create a new directory for new training run
     new_dir = checkpoint.parent.parent
@@ -48,6 +48,10 @@ if __name__ == "__main__":
             print(f"overwriting: {old} with {line}")
         if line.startswith('OUTPUT_DIR:'):
             line = f'OUTPUT_DIR: {new_dir}\n'
+        if line == '    LR_STEPS: [30000, 60000]':
+            old = line
+            line = '    LR_STEPS: [14000, 22000]'
+            print(f"overwriting: {old} with {line}")
         
         # You might want to change some other hyperparameters, such as learning rate!
         new_config_lines.append(line)
