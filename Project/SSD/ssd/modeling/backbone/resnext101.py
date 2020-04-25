@@ -9,7 +9,6 @@ import torch.nn.functional as F
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1, padding=1):
     """3x3 convolution with padding"""
-    print(padding)
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                      padding=padding, groups=groups, bias=False, dilation=dilation)
 
@@ -216,9 +215,9 @@ class ResNextModel(torch.nn.Module):
         # Top-down modules for feature pyramid network
         #self.TD1 = TopDownModule(output_channels[4], output_channels[5])
         #self.TD2 = TopDownModule(output_channels[3], output_channels[4])
-        self.TD3 = TopDownModule(output_channels[2], output_channels[3])
-        self.TD4 = TopDownModule(output_channels[1], output_channels[2])
-        self.TD5 = TopDownModule(256, output_channels[1])
+        #self.TD3 = TopDownModule(output_channels[2], output_channels[3])
+        #self.TD4 = TopDownModule(output_channels[1], output_channels[2])
+        #self.TD5 = TopDownModule(256, output_channels[1])
 
         """
         # Light-weight scratch network
@@ -239,13 +238,27 @@ class ResNextModel(torch.nn.Module):
         # Adding extra layers for smaller feature maps: Residual blocks with downsampling
         
         self.extraLayers = nn.Sequential(
-            self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
-            self._make_extra_layer(BasicBlock, 512, 1, stride = 2),
-            self._make_extra_layer(BasicBlock, 512, 1, stride = 2, padding=1),
-            self._make_extra_layer(BasicBlock, 512, 1, stride = 1, padding=0)
+            self._make_extra_layer(BasicBlock, 512, 512, 1, stride = 2),
+            self._make_extra_layer(BasicBlock, 512, 512, 1, stride = 2),
+            self._make_extra_layer(BasicBlock, 512, 256, 1, stride = 2, padding=1),
+            self._make_extra_layer(BasicBlock, 256, 256, 1, stride = 2, padding=1),
+            self._make_extra_layer(BasicBlock, 256, 256, 1, stride = 2, padding=1)
+            #nn.AdaptiveAvgPool2d((1,1))
+            #self._make_extra_layer(BasicBlock, 512, 1, stride = 1, padding=0)
         )
+        """
+        nn.Sequential(
+            conv3x3(512, 256, stride=1, groups=1,dilation=1,padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 512, kernel_size=(3,4), stride=1,
+                 padding=0, groups=1, bias=False, dilation=1)
+            #conv3x3(256, 512,stride=1,groups=1,dilation=1,padding=0)
+            )
+        """
 
         #self.extraLayers = AddedLayers(output_channels[2])
+        #print(self.extraLayers[2])
 
         # Initialize weights in extra layers with kaiming initialization
         for layer in self.extraLayers:
@@ -273,26 +286,26 @@ class ResNextModel(torch.nn.Module):
 
 
     ## The following function is from the pytroch resnet implementation (modified):
-    def _make_extra_layer(self, block, planes, blocks, stride=1, dilate=False, padding=1):
+    def _make_extra_layer(self, block, in_planes, out_planes, blocks, stride=1, dilate=False, padding=1):
         norm_layer = nn.BatchNorm2d
         downsample = None
         previous_dilation = self.dilation
         if dilate:
             self.dilation *= stride
             stride = 1
-        if stride != 1 #or self.inplanes != planes * block.expansion:
+        if stride != 1: #or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
-                conv1x1(self.inplanes, planes * block.expansion, stride),
-                norm_layer(planes * block.expansion),
+                conv1x1(in_planes, out_planes * block.expansion, stride),
+                norm_layer(out_planes * block.expansion),
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
+        layers.append(block(in_planes, out_planes, stride, downsample, self.groups,
                             self.base_width, dilation=previous_dilation, padding = padding, norm_layer=norm_layer))
-        self.inplanes = planes * block.expansion
+        #self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, groups=self.groups,
-                                base_width=self.base_width, dilation=self.dilation,
+            layers.append(block(in_planes, out_planes, groups=self.groups,
+                                base_width=self.base_width, dilation=self.dilation, padding = padding,
                                 norm_layer=norm_layer))
 
         return nn.Sequential(*layers)
@@ -328,11 +341,13 @@ class ResNextModel(torch.nn.Module):
         feature3 = self.extraLayers[0](feature2)
         feature4 = self.extraLayers[1](feature3)
         feature5 = self.extraLayers[2](feature4)
-        feature6 = self.extraLayers[3](feature5) 
+        feature6 = self.extraLayers[3](feature5)
 
-        p3 = self.TD3(feature3, feature4)
-        p2 = self.TD4(feature2, p3)
-        p1 = self.TD5(feature1, p2)
+        feature7 = self.extraLayers[4](feature6) 
+
+        #p3 = self.TD3(feature3, feature4)
+        #p2 = self.TD4(feature2, p3)
+        #p1 = self.TD5(feature1, p2)
         
         """
         out_features.append(p1)
@@ -349,6 +364,6 @@ class ResNextModel(torch.nn.Module):
                 f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
         print("Passed tests")
         """
-        #return (feature1, feature2, feature3, feature4, feature5, feature6)
-        return (p1, p2, p3, feature4, feature5, feature6)
+        return (feature1, feature2, feature3, feature4, feature5, feature6, feature7)
+        #return (p1, p2, p3, feature4, feature5, feature6)
 

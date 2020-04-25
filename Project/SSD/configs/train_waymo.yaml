@@ -3,18 +3,18 @@ MODEL:
     BACKBONE:
         NAME: 'resnext101'
         PRETRAINED: True
-        OUT_CHANNELS: [512, 512, 512, 512, 512, 512]
+        OUT_CHANNELS: [128, 256, 512, 512, 256, 256, 256]
         INPUT_CHANNELS: 3
 INPUT:
-    IMAGE_SIZE: (360,270)
+    IMAGE_SIZE: (512, 384)
 DATASETS:
     TRAIN: ("waymo_train",)
     TEST: ("waymo_val", )
 SOLVER:
-    MAX_ITER: 80000
-    LR_STEPS: [24000, 34000]
+    MAX_ITER: 70000
+    LR_STEPS: [20000, 30000]
     GAMMA: 0.1
-    BATCH_SIZE: 32
-    LR: 2e-4
-OUTPUT_DIR: 'outputs/resnet34_360x270_FPNV2_photometric'
+    BATCH_SIZE: 24
+    LR: 1e-3
+OUTPUT_DIR: 'outputs/resnet34_512x384'
 DATASET_DIR: "datasets"
